@@ -213,7 +213,7 @@ text_rect = text.get_rect(center = (width/2, height/6))
 environment_group = pygame.sprite.Group()
 dialogueTrigger_group = pygame.sprite.Group()
 newRoomTrigger_group = pygame.sprite.Group()
-puzzle_group = pygame.sprite.Group()
+puzzleTrigger_group = pygame.sprite.Group()
 
 playerGroup = pygame.sprite.Group()
 player = Player()
@@ -233,10 +233,6 @@ startMenu = Environment(width/2, height/2, width, height, False, "placeholderEnv
 
 # FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS
 
-testDialogueTrigger = DialogueTrigger(800, 800, 100, 100, True, 3, ["What??!!", "Now I have a sprite? WITH EXPRESSIONS???", "This is getting out of hand...", " "], ["banditSurprised.png", "bandit.png", "bandit.png", "bandit.png"], "placeholderDialogueTrigger.png")
-testNewRoomDialogue = DialogueTrigger(850, 450, 100, 100, False, 2, ["surprise", "get jumpscard nerd nerd", " "], ["what.png", "what.png", "what.png"])
-testNewRoomDialogue.image.set_alpha(0)
-
 studyInitDialogue = DialogueTrigger(850, 450, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["what.png", "what.png", "what.png", "what.png"])
 studyInitDialogue.image.set_alpha(0)
 
@@ -244,7 +240,7 @@ hintDialogue = DialogueTrigger(width/2, height/2, 100, 100, False, 3, ["placehol
 hintDialogue.image.set_alpha(0)
 
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False, 0, 1800, 1100, 10, 0, "placeholderNewRoomTrigger.png")
-studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 2, width/2, 700, 2, 3000)
+studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 1, width/2, 700, 2, 3000)
 
 journal = PuzzleTrigger(width/2, height/2, 100, 100, False, 0, "placeholderPuzzle.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, "placeholderJournalContents.png")
@@ -261,11 +257,6 @@ def startScreen():
     interactable = True
     startButton.image = pygame.transform.scale(pygame.image.load("placeholderStartButton.png").convert_alpha(), (500, 200))
 
-def testRoom():
-    environment_group.add(floor, box, box2)
-    dialogueTrigger_group.add(testDialogueTrigger, testNewRoomDialogue)
-    newRoomTrigger_group.add(backToStartMenu)
-
 def study():
     environment_group.add(floor)
     dialogueTrigger_group.add(journalDialogue)
@@ -273,8 +264,7 @@ def study():
 
 roomDict = {
     0 : startScreen,
-    #1 : testRoom,
-    2 : study
+    1 : study
 }
 
 # Functions for additional things that have to constantly happen when entering a new room, such as the player updating or drawing additional text
@@ -282,24 +272,15 @@ roomDict = {
 def startScreenExtra():
     screen.blit(text, text_rect)
 
-#def testRoomExtra():
-#    player.update()
-
 def studyExtra():
     player.update()
 
 roomExtraDict = {
     0 : startScreenExtra,
-    #1 : testRoomExtra,
-    2 : studyExtra
+    1 : studyExtra
 }
 
 # Functions for dialogue events that happen after a specific dialogue plays
-
-#def testRoomDialogueEvent():
-#    global interactable
-#    interactable = False
-#    pass
 
 def dialogueKill():
     global interactable
@@ -308,12 +289,10 @@ def dialogueKill():
 
 def replaceDialogue():
     journalDialogue.kill()
-    puzzle_group.add(journal)
+    puzzleTrigger_group.add(journal)
 
 
 dialogueEventDict = {
-    #"This is getting out of hand..." : testRoomDialogueEvent,
-    "get jumpscared nerd" : dialogueKill,
     "HUH?? WHY AM I ON THE FLOOR?" : dialogueKill,
     "What's this?" : replaceDialogue,
 
@@ -325,22 +304,14 @@ dialogueEventDict = {
 
 # Functions for new room events that happen after entering a new room
 
-#def surprise():
-#    global dialogueInitiated
-#    testNewRoomDialogue.xpos, testNewRoomDialogue.ypos = player.xpos, player.ypos
-#    dialogueTrigger_group.add(testNewRoomDialogue)
-#    dialogueInitiated = True
-
 def wakeUp():
-    global dialogueInitiated
     pygame.time.wait(5000)
     forceDialogue(studyInitDialogue)
     player.image = pygame.transform.rotate(pygame.image.load("bandit.png").convert_alpha(), 0)
 
 
 newRoomEventDict = {
-    #1 : surprise,
-    2 : wakeUp
+    1 : wakeUp,
 }
 
 # HINT DICTIONARY AND STUFF YEAH
@@ -348,21 +319,20 @@ newRoomEventDict = {
 hintID = 1
 
 hintDict = {
-    11 : "i said right",
-    12 : "foot creep",
-    13 : "ooo",
-    21 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
-    22 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
-    23 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "]
+    11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
+    12 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
+    13 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "]
 }
 
 # PUZZLE STUFF YEAH UHUH YUP
 
-#def journalContents():
-
+def journalZoom():
+    screen.blit(journalContents.image, journalContents.rect)
+    exitButton.rect.centerx, exitButton.rect.centery = journalContents.rect.right, journalContents.rect.top
+    screen.blit(exitButton.image, exitButton.rect)
 
 puzzleDict = {
-    0 : journalContents,
+    0 : journalZoom,
 }
 
 # -------------------------------------------- GAME LOOP -------------------------------------------------------- #
@@ -378,6 +348,7 @@ roomDict[roomID]()
 
 while run:
     mouse_pos = pygame.mouse.get_pos()
+
     for event in pygame.event.get(): # event handler
         if event.type == pygame.QUIT:
             run = False
@@ -402,7 +373,7 @@ while run:
                 dialogueInitiated = True
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable: # new room handler
                 changingRoomsCond = True
-            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzle_group, False)) and interactable:
+            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable:
                 if puzzleActive:
                     puzzleActive = False
                     movement = True
@@ -423,7 +394,7 @@ while run:
     environment_group.draw(screen)
     dialogueTrigger_group.draw(screen)
     newRoomTrigger_group.draw(screen)
-    puzzle_group.draw(screen)
+    puzzleTrigger_group.draw(screen)
     playerGroup.draw(screen)
     try:
         roomExtraDict[roomID]()
@@ -433,16 +404,34 @@ while run:
     screenTransition.image.set_alpha(screenTransitionAlpha)
 
     if interactable:
-        if any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) or any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) or any(pygame.sprite.spritecollide(player, puzzle_group, False)):
+        if any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) or any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) or any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)):
             screen.blit(interactSign.image, (player.rect.centerx, player.rect.top - interactSign.rect.h))
 
     screen.blit(screenTransition.image, screenTransition.rect)
 
+    #if changingRoomsCond:
+    #    movement = False
+    #    newRoomTriggerList = pygame.sprite.spritecollide(player, newRoomTrigger_group, False)
+    #    for ID in newRoomTriggerList:
+    #        changingRooms(ID.rID, ID.newX, ID.newY, ID.speed, ID.waitMS)
+    #    if bool(newRoomTriggerList) == False:
+    #        screenTransitionAlpha -= 10
+    #    if screenTransitionAlpha <= 0:
+    #        changingRoomsCond = False
+    #        movement = True
+    #        screenTransitionAlpha = 0
+    #        try:
+    #            newRoomEventDict[roomID]()
+    #        except:
+    #            print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
+
     if changingRoomsCond:
         movement = False
         newRoomTriggerList = pygame.sprite.spritecollide(player, newRoomTrigger_group, False)
-        for ID in newRoomTriggerList:
-            changingRooms(ID.rID, ID.newX, ID.newY, ID.speed, ID.waitMS)
+        try:
+            changingRooms(newRoomTriggerList[0].rID, newRoomTriggerList[0].newX, newRoomTriggerList[0].newY, newRoomTriggerList[0].speed, newRoomTriggerList[0].waitMS)
+        except:
+            pass
         if bool(newRoomTriggerList) == False:
             screenTransitionAlpha -= 10
         if screenTransitionAlpha <= 0:
@@ -457,20 +446,18 @@ while run:
     if dialogueInitiated:
         movement = False
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
-        for texts in dialogueList:
-            conversation(texts.text, texts.expression, texts.speed)
-            if dialogueDone:
-                try: 
-                    dialogueEventDict[texts.text[len(texts.text) - 2]]()
-                except:
-                    print("could not find an event to run after dialogue finished (MAY OR MAY NOT BE A PROBLEM)")
+        conversation(dialogueList[0].text, dialogueList[0].expression, dialogueList[0].speed)
+        if dialogueDone:
+            try: 
+                 dialogueEventDict[dialogueList[0].text[len(dialogueList[0].text) - 2]]()
+            except:
+                print("could not find an event to run after dialogue finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if puzzleActive:
         movement = False
-        puzzleList = pygame.sprite.spritecollide(player, puzzle_group, False)
-        screen.blit(puzzleDict[puzzleList[0].pID].image, puzzleDict[puzzleList[0].pID].rect)
-        exitButton.rect.centerx, exitButton.rect.centery = puzzleDict[puzzleList[0].pID].rect.right, puzzleDict[puzzleList[0].pID].rect.top
-        screen.blit(exitButton.image, exitButton.rect)
+        puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
+        puzzleDict[puzzleList[0].pID]()
+
     pygame.display.flip()
     clock.tick(60)
 
