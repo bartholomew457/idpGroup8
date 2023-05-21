@@ -220,7 +220,7 @@ player = Player()
 playerGroup.add(player)
 
 interactSign = Environment(1700, 1000, 100, 100, False, "press f.png")
-exitButton = Environment(1700, 100, 100, 100, False, "exitButton.png")
+exitButton = Environment(1700, 1000, 100, 100, False, "exitButton.png")
 
 box2 = Environment(500, 200, 300, 300, True, "placeholderEnvironment.png")
 box = Environment(500, 500, 300, 300, True, "placeholderEnvironment.png")
@@ -228,8 +228,6 @@ floor = Environment(width/2, height/2, width, height, False, "placeholderEnviron
 
 startButton = Environment(width/2, height*5/6, 500, 200, False, "placeholderStartButton.png")
 startMenu = Environment(width/2, height/2, width, height, False, "placeholderEnvironment.png")
-
-
 
 # FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS
 
@@ -245,6 +243,10 @@ studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 1, width/2, 700, 2, 
 journal = PuzzleTrigger(width/2, height/2, 100, 100, False, 0, "placeholderPuzzle.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, "placeholderJournalContents.png")
 journalDialogue = DialogueTrigger(width/2, height/2, 100, 100, False, 3, ["What's this?", " "], ["what.png", "what.png"], "placeholderDialogueTrigger.png")
+journalInputBox = pygame.Rect(900, 700, 400, 55)
+journalInputText = ""
+journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
+typing = False
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
@@ -330,6 +332,12 @@ def journalZoom():
     screen.blit(journalContents.image, journalContents.rect)
     exitButton.rect.centerx, exitButton.rect.centery = journalContents.rect.right, journalContents.rect.top
     screen.blit(exitButton.image, exitButton.rect)
+    if typing:
+        pygame.draw.rect(screen, (0, 0, 0), journalInputBox, 2)
+    else:
+        pygame.draw.rect(screen, (128, 128, 128), journalInputBox, 2)
+    journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
+    screen.blit(journalInputTextSurf, (journalInputBox.x + 5, journalInputBox.y + 8))
 
 puzzleDict = {
     0 : journalZoom,
@@ -347,7 +355,7 @@ screenTransition = Environment(width/2, height/2, width, height, False, "solidBl
 roomDict[roomID]()
 
 while run:
-    mouse_pos = pygame.mouse.get_pos()
+    #mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get(): # event handler
         if event.type == pygame.QUIT:
@@ -355,7 +363,7 @@ while run:
         if event.type == pygame.KEYUP: # inventory handler
             if event.key == pygame.K_e:
                 inventory = True if inventory == False else False
-            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)):
+            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and not typing:
                 try:
                     hintDialogue.text = hintDict[int(f'{roomID}{hintID}')]
                     hintDialogue.expression = []
@@ -369,11 +377,11 @@ while run:
                     hintDialogue.expression = ["what.png", "what.png"]
                     forceDialogue(hintDialogue)
                     interactable = False
-            if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable: # dialogue handler
+            if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable and not typing: # dialogue handler
                 dialogueInitiated = True
-            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable: # new room handler
+            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
-            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable:
+            elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing:
                 if puzzleActive:
                     puzzleActive = False
                     movement = True
@@ -386,10 +394,21 @@ while run:
                 textDone = False
                 activeMessage += 1
                 counter = 0
+            if typing:
+                if event.key == pygame.K_BACKSPACE:
+                    journalInputText = journalInputText[:-1]
+                elif event.key == pygame.K_RETURN or len(journalInputText) >= 15:
+                    pass
+                else:
+                    journalInputText += event.unicode
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if exitButton.rect.collidepoint(mouse_pos):
+            if exitButton.rect.collidepoint(event.pos):
                 puzzleActive = False
                 movement = True
+            if journalInputBox.collidepoint(event.pos):
+                typing = False
+            else:
+                typing = True
 
     environment_group.draw(screen)
     dialogueTrigger_group.draw(screen)
@@ -408,22 +427,6 @@ while run:
             screen.blit(interactSign.image, (player.rect.centerx, player.rect.top - interactSign.rect.h))
 
     screen.blit(screenTransition.image, screenTransition.rect)
-
-    #if changingRoomsCond:
-    #    movement = False
-    #    newRoomTriggerList = pygame.sprite.spritecollide(player, newRoomTrigger_group, False)
-    #    for ID in newRoomTriggerList:
-    #        changingRooms(ID.rID, ID.newX, ID.newY, ID.speed, ID.waitMS)
-    #    if bool(newRoomTriggerList) == False:
-    #        screenTransitionAlpha -= 10
-    #    if screenTransitionAlpha <= 0:
-    #        changingRoomsCond = False
-    #        movement = True
-    #        screenTransitionAlpha = 0
-    #        try:
-    #            newRoomEventDict[roomID]()
-    #        except:
-    #            print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if changingRoomsCond:
         movement = False
