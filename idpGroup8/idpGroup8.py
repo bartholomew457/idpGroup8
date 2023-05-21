@@ -214,6 +214,7 @@ environment_group = pygame.sprite.Group()
 dialogueTrigger_group = pygame.sprite.Group()
 newRoomTrigger_group = pygame.sprite.Group()
 puzzleTrigger_group = pygame.sprite.Group()
+dummy_group = pygame.sprite.Group()
 
 playerGroup = pygame.sprite.Group()
 player = Player()
@@ -289,6 +290,12 @@ def dialogueKill():
     pygame.sprite.spritecollide(player, dialogueTrigger_group, False)[0].kill()
     interactable = True
 
+def hintKill():
+    dialogueKill()
+    player.xpos, player.ypos = dummy.xpos, dummy.ypos
+    player.update()
+    dummy.kill()
+
 def replaceDialogue():
     journalDialogue.kill()
     puzzleTrigger_group.add(journal)
@@ -298,10 +305,10 @@ dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : dialogueKill,
     "What's this?" : replaceDialogue,
 
-    "(Such as the FIRST thing they would do for the day.)" : dialogueKill,
-    "(But in what order should it be arranged in...?)" : dialogueKill,
-    "(are CONNECTED.)" : dialogueKill,
-    "(No hints available.)" : dialogueKill
+    "(Such as the FIRST thing they would do for the day.)" : hintKill,
+    "(But in what order should it be arranged in...?)" : hintKill,
+    "(are CONNECTED.)" : hintKill,
+    "(No hints available.)" : hintKill
 }
 
 # Functions for new room events that happen after entering a new room
@@ -355,7 +362,7 @@ screenTransition = Environment(width/2, height/2, width, height, False, "solidBl
 roomDict[roomID]()
 
 while run:
-    #mouse_pos = pygame.mouse.get_pos()
+    mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get(): # event handler
         if event.type == pygame.QUIT:
@@ -363,12 +370,16 @@ while run:
         if event.type == pygame.KEYUP: # inventory handler
             if event.key == pygame.K_e:
                 inventory = True if inventory == False else False
-            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and not typing:
+            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing: #not any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and not typing:
                 try:
+                    dummy = Environment(player.xpos, player.ypos, 135, 135, False, "bandit.png" if player.facing == "left" else "banditRight.png")
                     hintDialogue.text = hintDict[int(f'{roomID}{hintID}')]
                     hintDialogue.expression = []
                     for i in range(len(hintDialogue.text)):
                         hintDialogue.expression.append("what.png")
+                    player.xpos, player.ypos = 0, 1100
+                    player.update()
+                    dummy_group.add(dummy)
                     forceDialogue(hintDialogue)
                     interactable = False
                     hintID += 1
@@ -406,15 +417,16 @@ while run:
                 puzzleActive = False
                 movement = True
             if journalInputBox.collidepoint(event.pos):
-                typing = False
-            else:
                 typing = True
+            else:
+                typing = False
 
     environment_group.draw(screen)
     dialogueTrigger_group.draw(screen)
     newRoomTrigger_group.draw(screen)
     puzzleTrigger_group.draw(screen)
     playerGroup.draw(screen)
+    dummy_group.draw(screen)
     try:
         roomExtraDict[roomID]()
     except:
