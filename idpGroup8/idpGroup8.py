@@ -300,9 +300,14 @@ def replaceDialogue():
     journalDialogue.kill()
     puzzleTrigger_group.add(journal)
 
+def puzzleInit():
+    global timerEnabled
+    dialogueKill()
+    timerEnabled = True
+
 
 dialogueEventDict = {
-    "HUH?? WHY AM I ON THE FLOOR?" : dialogueKill,
+    "HUH?? WHY AM I ON THE FLOOR?" : puzzleInit,
     "What's this?" : replaceDialogue,
 
     "(Such as the FIRST thing they would do for the day.)" : hintKill,
@@ -350,6 +355,14 @@ puzzleDict = {
     0 : journalZoom,
 }
 
+# -------------------------------------------- PUZZLE TIMER -------------------------------------------------------- #
+
+timerEnabled = False
+pygame.time.set_timer(pygame.USEREVENT, 1000)
+timerLengthSecs = 300
+timer_surf = largerFont.render("05:00", False, "white")
+timer_rect = timer_surf.get_rect(center = (width/2, 150))
+
 # -------------------------------------------- GAME LOOP -------------------------------------------------------- #
 
 gameStart = False
@@ -362,7 +375,7 @@ screenTransition = Environment(width/2, height/2, width, height, False, "solidBl
 roomDict[roomID]()
 
 while run:
-    mouse_pos = pygame.mouse.get_pos()
+    #mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get(): # event handler
         if event.type == pygame.QUIT:
@@ -417,9 +430,9 @@ while run:
                 puzzleActive = False
                 movement = True
             if journalInputBox.collidepoint(event.pos):
-                typing = True
-            else:
-                typing = False
+                typing = True if not typing else False
+        if event.type == pygame.USEREVENT and timerEnabled:
+            timerLengthSecs -= 1
 
     environment_group.draw(screen)
     dialogueTrigger_group.draw(screen)
@@ -473,6 +486,12 @@ while run:
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
         puzzleDict[puzzleList[0].pID]()
 
+    if timerEnabled:
+        if timerLengthSecs > -1:
+            timerDisplaySecs = timerLengthSecs % 60
+            timerDisplayMins = int(timerLengthSecs/60) % 60
+        timer_surf = largerFont.render(f"{timerDisplayMins:02}:{timerDisplaySecs:02}", False, "White")
+        screen.blit(timer_surf, timer_rect)
     pygame.display.flip()
     clock.tick(60)
 
