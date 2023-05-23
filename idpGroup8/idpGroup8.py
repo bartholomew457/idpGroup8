@@ -9,14 +9,10 @@ height = 900
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("idp")
 clock = pygame.time.Clock()
-font = pygame.font.Font(None, 50)
-largerFont = pygame.font.Font(None, 65)
 
-# music
-pass
-
-inventory = False
-movement = False
+# Music and Sounds
+click = pygame.mixer.Sound("dialogueSFX.mp3")
+click.set_volume(0.1)
 
 # -------------------------------------------- CLASSES -------------------------------------------------------- #
 
@@ -133,18 +129,10 @@ class PuzzleTrigger(Environment):
         self.pID = pID
 # --------------------------------------------- FUNCTIONS -------------------------------------------------------- #
 
-interactable = True
-
 textDone = False
 counter = 0
 activeMessage = 0
-dialogueInitiated = False
-dialogueDone = True
-click = pygame.mixer.Sound("dialogueSFX.mp3")
-click.set_volume(0.1)
-dialogueBox = Environment(width/2, 725, 1500, 250, False, "placeholderDialogueBox.png")
-pressEnter_Text = font.render("Press Enter to continue.", True, "White")
-pressEnter_Rect = pressEnter_Text.get_rect(bottomright = (1525, 825))
+dialogueDone = False
 
 def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, THE SLOWER IT WILL BE YES THIS IS NOT INTUITIVE OH WELL
     global movement, counter, textDone, activeMessage, message, wholeMessage, dialogueInitiated, dialogueDone
@@ -152,7 +140,6 @@ def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, TH
     message = wholeMessage[activeMessage]
     dialogueSprite = pygame.transform.scale(pygame.image.load(expression[activeMessage]).convert(), (200, 200))
     old = message[0:counter//speed]
-    dialogueDone = False
     if activeMessage >= len(wholeMessage) - 1:
         dialogueInitiated = False
         activeMessage = 0
@@ -208,8 +195,14 @@ def forceNewRoom(roomTrigger):
 # ------------------------------------------- SURFACES (such as text, sprites) -------------------------------------------------------- #
 
 # text related stuff
+font = pygame.font.Font(None, 50)
+largerFont = pygame.font.Font(None, 65)
+
 text = font.render("idp thing", True, "Black")
 text_rect = text.get_rect(center = (width/2, height/6))
+
+pressEnter_Text = font.render("Press Enter to continue.", True, "White")
+pressEnter_Rect = pressEnter_Text.get_rect(bottomright = (1525, 825))
 
 # sprites/surfaces
 environment_group = pygame.sprite.Group()
@@ -221,19 +214,22 @@ dummy_group = pygame.sprite.Group()
 playerGroup = pygame.sprite.Group()
 player = Player()
 playerGroup.add(player)
-dummy = Environment(1700, 1000, 135, 135, False, "bandit.png")
 
-interactSign = Environment(1700, 1000, 100, 100, False, "press f.png")
-exitButton = Environment(1700, 1000, 100, 100, False, "exitButton.png")
-
-box2 = Environment(500, 200, 300, 300, True, "placeholderEnvironment.png")
-box = Environment(500, 500, 300, 300, True, "placeholderEnvironment.png")
-floor = Environment(width/2, height/2, width, height, False, "placeholderEnvironment.png")
-
+# Starting Screen
 startButton = Environment(width/2, height*5/6, 500, 200, False, "placeholderStartButton.png")
 startMenu = Environment(width/2, height/2, width, height, False, "placeholderEnvironment.png")
 
-# FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS
+# Room 1
+floor = Environment(width/2, height/2, width, height, False, "placeholderEnvironment.png")
+
+# Misc Environments
+dummy = Environment(1700, 1000, 135, 135, False, "bandit.png")
+dialogueBox = Environment(width/2, 725, 1500, 250, False, "placeholderDialogueBox.png")
+interactSign = Environment(1700, 1000, 100, 100, False, "press f.png")
+exitButton = Environment(1700, 1000, 100, 100, False, "exitButton.png")
+screenTransition = Environment(width/2, height/2, width, height, False, "solidBlack.png")
+
+# Dialogue Triggers (FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS)
 
 studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["what.png", "what.png", "what.png", "what.png"])
 studyInitDialogue.image.set_alpha(0)
@@ -243,20 +239,19 @@ hintDialogue.image.set_alpha(0)
 
 deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 5, ["Uh oh...", "I don't feel so good...", " "], ["what.png", "what.png", "what.png"])
 
+# New Room Triggers
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False, 0, 1800, 1100, 10, 0, "placeholderNewRoomTrigger.png")
 studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 1, width/2, 700, 2, 3000)
 
+# Puzzle 1
 journal = PuzzleTrigger(width/2, height/2, 100, 100, False, 0, "placeholderPuzzle.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, "placeholderJournalContents.png")
 journalDialogue = DialogueTrigger(width/2, height/2, 100, 100, False, 3, ["What's this?", " "], ["what.png", "what.png"], "placeholderDialogueTrigger.png")
 journalInputBox = pygame.Rect(900, 700, 400, 55)
 journalInputText = ""
 journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
-typing = False
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
-
-roomID = 0
 
 def startScreen():
     global interactable
@@ -310,9 +305,6 @@ def puzzleInit():
     dialogueKill()
     timerEnabled = True
 
-fadingOut = False
-playerAlpha = 255
-
 def fadeOut():
     global fadingOut, timerEnabled, movement, interactable
     dummy.image = pygame.transform.rotate(pygame.image.load("bandit.png").convert_alpha(), 90)
@@ -345,8 +337,6 @@ newRoomEventDict = {
 
 # HINT DICTIONARY AND STUFF YEAH
 
-hintID = 1
-
 hintDict = {
     11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
     12 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
@@ -372,7 +362,6 @@ puzzleDict = {
 
 # -------------------------------------------- PUZZLE TIMER -------------------------------------------------------- #
 
-timerEnabled = False
 timerEvent = pygame.USEREVENT + 1
 fadingOutEvent = pygame.USEREVENT + 2
 pygame.time.set_timer(timerEvent, 1000)
@@ -382,16 +371,33 @@ currentTimerLengthSecs = timerLengthSecs
 timer_surf = largerFont.render("05:00", False, "white")
 timer_rect = timer_surf.get_rect(center = (width/2, 100))
 
-# -------------------------------------------- GAME LOOP -------------------------------------------------------- #
+# -------------------------------------------- GAME VARIABLES -------------------------------------------------------- #
 
-gameStart = False
+# Game State Variables
 run = True
+dialogueInitiated = False
 changingRoomsCond = False
 puzzleActive = False
+inventory = False
+
+timerEnabled = False
+typing = False
+fadingOut = False
+
+movement = False
+interactable = True
+
+roomID = 0
+hintID = 1
+puzzleID = 1 # not used for anything right now
+
 screenTransitionAlpha = 0
-screenTransition = Environment(width/2, height/2, width, height, False, "solidBlack.png")
+dummyAlpha = 255
 
 roomDict[roomID]()
+
+# -------------------------------------------- GAME LOOP -------------------------------------------------------- #
+
 
 while run:
 
@@ -456,9 +462,9 @@ while run:
                 currentTimerLengthSecs -= 1 if currentTimerLengthSecs > -1 else 0
         if fadingOut:
             if event.type == fadingOutEvent:
-                playerAlpha -= 1
-                dummy.image.set_alpha(playerAlpha)
-                if playerAlpha < 0:
+                dummyAlpha -= 1
+                dummy.image.set_alpha(dummyAlpha)
+                if dummyAlpha < 0:
                     pygame.time.wait(1000)
                     fadingOut = False
                     forceNewRoom(backToStartMenu)
@@ -497,7 +503,7 @@ while run:
             screenTransitionAlpha = 0
             try:
                 newRoomEventDict[roomID]()
-            except:
+            except KeyError:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if dialogueInitiated:
@@ -505,9 +511,10 @@ while run:
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
         conversation(dialogueList[0].text, dialogueList[0].expression, dialogueList[0].speed)
         if dialogueDone:
+            dialogueDone = False
             try: 
                 dialogueEventDict[dialogueList[0].text[len(dialogueList[0].text) - 2]]()
-            except:
+            except KeyError:
                 print("could not find an event to run after dialogue finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if puzzleActive:
