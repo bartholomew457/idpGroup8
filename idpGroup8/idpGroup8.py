@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite): # player class :)
                 if "right" not in self.facing:
                     self.image = pygame.transform.flip(self.image, True, False)
                     self.facing = "right"
-            if keys[pygame.K_UP] or keys[pygame.K_w] and self.rect.top >= height-height:
+            if keys[pygame.K_UP] or keys[pygame.K_w] and self.rect.top >= 450:
                 self.ypos -= 1*self.speed
             if keys[pygame.K_DOWN] or keys[pygame.K_s] and self.rect.bottom <= height:
                 self.ypos += 1*self.speed
@@ -138,7 +138,7 @@ def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, TH
     global movement, counter, textDone, activeMessage, message, wholeMessage, dialogueInitiated, dialogueDone
     wholeMessage = text
     message = wholeMessage[activeMessage]
-    dialogueSprite = pygame.transform.scale(pygame.image.load(expression[activeMessage]).convert(), (200, 200))
+    dialogueSprite = pygame.transform.scale(pygame.image.load(expression[activeMessage]).convert_alpha(), (200, 200))
     old = message[0:counter//speed]
     if activeMessage >= len(wholeMessage) - 1:
         dialogueInitiated = False
@@ -227,13 +227,14 @@ screenTransition = Environment(width/2, height/2, width, height, False, "solidBl
 
 # Dialogue Triggers (FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS)
 
-studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["what.png", "what.png", "what.png", "what.png"])
+studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyInitDialogue.image.set_alpha(0)
+studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["placeholder"], ["what.png"])
 hintDialogue.image.set_alpha(0)
 
-deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 5, ["Uh oh...", "I don't feel so good...", " "], ["what.png", "what.png", "what.png"])
+deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 5, ["Uh oh...", "I don't feel so good...", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # New Room Triggers
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
@@ -242,9 +243,9 @@ studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 1, 978, 842, 2, 3000
 # Puzzle 1
 journal = PuzzleTrigger(742, 559, 73, 100, False, 0, "studyRoom\journalAsset.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, "placeholderJournalContents.png")
-journalDialogue = DialogueTrigger(742, 559, 73, 100, False, 3, ["What's this?", " "], ["what.png", "what.png"], "studyRoom\journalAsset.png")
+journalDialogue = DialogueTrigger(742, 559, 73, 100, False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
 journalInputBox = pygame.Rect(900, 700, 400, 55)
-journalInputText = ""
+journalInputText = "_"
 journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
@@ -301,6 +302,8 @@ def studyPuzzleInit():
     dialogueKill()
     player.image = pygame.transform.rotate(player.image, -90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
+    player.rect.bottom = studyFloor.rect.bottom
+    player.xpos, player.ypos = player.rect.centerx, player.rect.centery
     timerEnabled = True
     pygame.time.set_timer(timerEvent, 1000)
 
@@ -314,6 +317,7 @@ def fadeOut():
 dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
     "What's this?" : replaceDialogue,
+    "(Perhaps you should try something else?...)" : dialogueKill,
 
     "(Such as the FIRST thing they would do for the day.)" : hintKill,
     "(But in what order should it be arranged in...?)" : hintKill,
@@ -330,10 +334,11 @@ def wakeUp():
     forceDialogue(studyInitDialogue)
 
 def death():
-    global currentTimerLengthSecs, hintID, interactable
+    global currentTimerLengthSecs, hintID, interactable, dummyAlpha
     interactable = True
     currentTimerLengthSecs = timerLengthSecs
-    dummy.image.set_alpha(255)
+    dummyAlpha = 255
+    dummy.image.set_alpha(dummyAlpha)
     hintID = 1
 
 
@@ -367,6 +372,10 @@ puzzleDict = {
     0 : journalZoom,
 }
 
+textCheckDict = {
+    "0amalgamation" : None
+}
+
 # -------------------------------------------- PUZZLE TIMER -------------------------------------------------------- #
 
 timerEvent = pygame.USEREVENT + 1
@@ -395,7 +404,7 @@ interactable = True
 
 roomID = 0
 hintID = 1
-currentPuzzleID = 1 # not used for anything right now
+currentPuzzleID = 0 # not used for anything right now
 
 screenTransitionAlpha = 0
 dummyAlpha = 255
@@ -419,7 +428,7 @@ while run:
                     hintDialogue.text = hintDict[int(f'{roomID}{hintID}')]
                     hintDialogue.expression = []
                     for i in range(len(hintDialogue.text)):
-                        hintDialogue.expression.append("what.png")
+                        hintDialogue.expression.append("player/cedricHeadshot.png")
                     player.xpos, player.ypos = 0, 1100
                     player.update()
                     dummy_group.add(dummy)
@@ -451,12 +460,21 @@ while run:
                 counter = 0
             if typing:
                 if event.key == pygame.K_BACKSPACE:
-                    journalInputText = journalInputText[:-1]
+                    journalInputText = journalInputText[:-2] + "_"
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
-                elif event.key == pygame.K_RETURN or journalInputTextSurf.get_width() >= 380:
+                elif event.key == pygame.K_RETURN:
+                    try:
+                        textCheckDict[f"{currentPuzzleID}{journalInputText}"]
+                        puzzleActive = False
+                        print("hooray you did it correctly do you want a gold star or smth??")
+                        movement = True # delete this and the print statement when the cutscene for the amalgamation is done and replace it with the proper sequence
+                    except KeyError:
+                        journalInputText = ""
+                        forceDialogue(studyPuzzleDialogue)
+                elif journalInputTextSurf.get_width() >= 380:
                     pass
                 else:
-                    journalInputText += event.unicode
+                    journalInputText = journalInputText.replace("_", "") + event.unicode + "_"
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
                     print(journalInputTextSurf.get_width())
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -517,6 +535,12 @@ while run:
             except KeyError:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
+    if puzzleActive:
+        movement = False
+        puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
+        currentPuzzleID = puzzleList[0].pID
+        puzzleDict[puzzleList[0].pID]()
+
     if dialogueInitiated:
         movement = False
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
@@ -528,11 +552,11 @@ while run:
             except KeyError:
                 print("could not find an event to run after dialogue finished (MAY OR MAY NOT BE A PROBLEM)")
 
-    if puzzleActive:
-        movement = False
-        puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
-        puzzleID = puzzleList[0].pID
-        puzzleDict[puzzleList[0].pID]()
+    #if puzzleActive:
+    #    movement = False
+    #    puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
+    #    currentPuzzleID = puzzleList[0].pID
+    #    puzzleDict[puzzleList[0].pID]()
 
     if timerEnabled:
         if currentTimerLengthSecs > -1:
