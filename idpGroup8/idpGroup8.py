@@ -14,7 +14,10 @@ clock = pygame.time.Clock()
 click = pygame.mixer.Sound("dialogueSFX.mp3")
 click.set_volume(0.1)
 deepClick = pygame.mixer.Sound("dialogueSFXLower.mp3")
-deepClick.set_volume(0.1)
+deepClick.set_volume(0.3)
+highClick = pygame.mixer.Sound("dialogueSFXHigher.mp3")
+highClick.set_volume(0.5)
+
 
 # -------------------------------------------- CLASSES -------------------------------------------------------- #
 
@@ -32,6 +35,16 @@ class Player(pygame.sprite.Sprite): # player class :)
     def inventory(self):
         if inventoryActive == True:
             screen.blit(inventoryEnv.image, inventoryEnv.rect)
+            screen.blit(inventorySlot1.image, inventorySlot1.rect)
+            screen.blit(inventorySlot2.image, inventorySlot2.rect)
+            screen.blit(inventorySlot3.image, inventorySlot3.rect)
+            screen.blit(inventorySlot4.image, inventorySlot4.rect)
+            for i in inventoryList:
+                screen.blit(pygame.transform.scale(pygame.image.load(i).convert_alpha(), (125, 125)), inventoryPositionDict[inventoryList.index(i)].rect)
+
+    def itemCheck(self, item):
+        if item in inventoryList:
+            return True
 
     def player_input(self):
         global movement
@@ -94,31 +107,46 @@ class Player(pygame.sprite.Sprite): # player class :)
         #pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Environment(pygame.sprite.Sprite): # class for handling images that are displayed on the game
-    def __init__(self, xpos, ypos, width, height, collidable:bool, image = "what.png"):
+    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png"):
         super().__init__()
         self.xpos = xpos
         self.ypos = ypos
+        self.name = image
         self.image = pygame.transform.scale(pygame.image.load(image).convert_alpha(), (width, height))
         self.rect = self.image.get_rect(center = (self.xpos, self.ypos))
         self.collidable = collidable
+        self.collectable = collectable
 
     def apply_change(self):
         self.rect.centerx = self.xpos
         self.rect.centery = self.ypos
 
-    def update(self):
+    def update(self, *argv):
         self.apply_change()
+        try:
+            for event in argv[0]:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.rect.collidepoint(event.pos) and self.collectable and interactable:
+                        self.kill()
+                        if len(inventoryList) < 4:
+                            inventoryList.append(self.name)
+                            highClick.play()
+                            print(f"{self.name} just died bruh")
+                            print(inventoryList)
+                            self.itemCheck(self.name)
+        except:
+            pass
 
 class DialogueTrigger(Environment): # class for handling images that will play dialogue when F key is pressed
-    def __init__(self, xpos, ypos, width, height, collidable:bool, speed, text, expression, image = "what.png"):
-        super().__init__(xpos, ypos, width, height, collidable, image)
+    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, speed, text, expression, image = "what.png"):
+        super().__init__(xpos, ypos, width, height, collidable, collectable, image)
         self.text = text
         self.expression = expression
         self.speed = speed
 
 class NewRoomTrigger(Environment): # class for handling images that will transport the player to a new room when the F key is pressed
-    def __init__(self, xpos, ypos, width, height, collidable:bool, rID, newX, newY, speed, waitMS, image = "what.png"):
-        super().__init__(xpos, ypos, width, height, collidable, image)
+    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, rID, newX, newY, speed, waitMS, image = "what.png"):
+        super().__init__(xpos, ypos, width, height, collidable, collectable, image)
         self.rID = rID
         self.newX = newX
         self.newY = newY
@@ -126,9 +154,15 @@ class NewRoomTrigger(Environment): # class for handling images that will transpo
         self.waitMS = waitMS
 
 class PuzzleTrigger(Environment):
-    def __init__(self, xpos, ypos, width, height, collidable:bool, pID, image = "what.png"):
-        super().__init__(xpos, ypos, width, height, collidable, image)
+    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, pID, image = "what.png"):
+        super().__init__(xpos, ypos, width, height, collidable, collectable, image)
         self.pID = pID
+
+#class InventoryItem(Environment):
+#    def __init__(self, xpos, ypos, width, height, collidable:bool, ):
+#        super().__init__()
+#        pass
+
 # --------------------------------------------- FUNCTIONS -------------------------------------------------------- #
 
 textDone = False
@@ -159,7 +193,7 @@ def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, TH
     if len(old.replace(" ", "")) < len(message[0:counter//speed].replace(" ", "")):
         try:
             voiceDict[expression[activeMessage]].play()
-        except:
+        except KeyError:
             click.play()
     screen.blit(dialogueBox.image, dialogueBox.rect)
     screen.blit(snip, (300, 625))
@@ -221,51 +255,65 @@ player = Player()
 playerGroup.add(player)
 
 # Starting Screen
-startMenu = Environment(width/2, height/2, width, height, False, "CoverImageforapp.png")
+startMenu = Environment(width/2, height/2, width, height, False, False, "CoverImageforapp.png")
 
 # Room 1
-studyFloor = Environment(width/2, height/2, width, height, False, "studyRoom\studyRoomBGI.png")
-amalgamation = Environment(1300, 600, 400, 600, True, "the yippee stares back.png")
+studyFloor = Environment(width/2, height/2, width, height, False, False, "studyRoom\studyRoomBGI.png")
+amalgamation = Environment(1300, 600, 400, 600, True, False, "the yippee stares back.png")
 
 # Misc Environments
-dummy = Environment(1700, 1000, player.image.get_width(), player.image.get_height(), False, "player/cedric.png")
-dialogueBox = Environment(width/2, 725, 1500, 250, False, "placeholderDialogueBox.png")
-interactSign = Environment(1700, 1000, 100, 100, False, "miscAssets/F_key.png")
-exitButton = Environment(1700, 1000, 100, 100, False, "exitButton.png")
-screenTransition = Environment(width/2, height/2, width, height, False, "solidBlack.png")
-inventoryEnv = Environment(1400, height/2, 350, 850, False, "solidBlack.png")
+dummy = Environment(1700, 1000, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
+dialogueBox = Environment(width/2, 725, 1500, 250, False, False, "placeholderDialogueBox.png")
+interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key.png")
+exitButton = Environment(1700, 1000, 100, 100, False, False, "exitButton.png")
+screenTransition = Environment(width/2, height/2, width, height, False, False, "solidBlack.png")
+keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
+match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
+unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+
+inventoryEnv = Environment(1400, height/2, 350, 850, False, False, "solidBlack.png")
 inventoryEnv.image.set_alpha(200)
+inventorySlot1 = Environment(1325, 125, 125, 125, False, False, "lightGray.png")
+inventorySlot1.image.set_alpha(175)
+inventorySlot2 = Environment(1475, 125, 125, 125, False, False,"lightGray.png")
+inventorySlot2.image.set_alpha(175)
+inventorySlot3 = Environment(1325, 275, 125, 125, False,False, "lightGray.png")
+inventorySlot3.image.set_alpha(175)
+inventorySlot4 = Environment(1475, 275, 125, 125, False,False, "lightGray.png")
+inventorySlot4.image.set_alpha(175)
+
 
 # Dialogue Triggers (FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS)
 
-studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyInitDialogue.image.set_alpha(0)
-studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False,False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyGrandfatherClockDialogue.image.set_alpha(0)
-studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyPuzzleDialogue.image.set_alpha(0)
-studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
+studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
 studyAmalPlayerDialogue.image.set_alpha(0)
+studyExitDoorDialogue = DialogueTrigger()
 
-hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["placeholder"], ["what.png"])
+hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["placeholder"], ["what.png"])
 hintDialogue.image.set_alpha(0)
 
-deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 5, ["Uh oh...", "I don't feel so good...", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 5, ["Uh oh...", "I don't feel so good...", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # New Room Triggers
-backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
-studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False, 1, 978, 842, 2, 3000)
+backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False,False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
+studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False,False, 1, 978, 842, 2, 3000)
 
 # Puzzle 1
-journal = PuzzleTrigger(742, 559, 73, 100, False, 0, "studyRoom\journalAsset.png")
-journalContents = Environment(width/2, height/2, 1200, 750, False, "placeholderJournalContents.png")
-journalDialogue = DialogueTrigger(742, 559, 73, 100, False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
+journal = PuzzleTrigger(742, 559, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
+journalContents = Environment(width/2, height/2, 1200, 750, False, False, "placeholderJournalContents.png")
+journalDialogue = DialogueTrigger(742, 559, 73, 100, False,False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
 journalInputBox = pygame.Rect(900, 700, 400, 55)
 journalInputText = ""
-journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
+journalInputTextSurf = font.render(journalInputText, False,False, (255, 255, 255))
 
 # Puzzle 2
-scroll = PuzzleTrigger(1700, 1000, 100, 100, False, 1, "studyRoom\scrollAsset.png") # CODE FUNCTIONALITY LATER BRUH!!!!!!
+scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png") # CODE FUNCTIONALITY LATER BRUH!!!!!!
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
@@ -275,7 +323,7 @@ def startScreen():
     interactable = True
 
 def study():
-    environment_group.add(studyFloor)
+    environment_group.add(studyFloor, keyO, unlitCandle)
     dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue)
     player.image = pygame.transform.rotate(player.image, 90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
@@ -293,6 +341,7 @@ def startScreenExtra():
 
 def studyExtra():
     player.update()
+    environment_group.update(event_list)
 
 roomExtraDict = {
     0 : startScreenExtra,
@@ -419,6 +468,17 @@ textCheckDict = {
     "1amalgamation" : journalTextSuccess
 }
 
+# -------------------------------------------- INVENTORY SHENANIGANS -------------------------------------------------------- #
+
+inventoryList = []
+
+inventoryPositionDict = {
+    0 : inventorySlot1,
+    1 : inventorySlot2,
+    2 : inventorySlot3,
+    3 : inventorySlot4
+}
+
 # -------------------------------------------- PUZZLE TIMER -------------------------------------------------------- #
 
 timerEvent = pygame.USEREVENT + 1
@@ -458,8 +518,8 @@ roomDict[roomID]()
 
 
 while run:
-
-    for event in pygame.event.get():
+    event_list = pygame.event.get()
+    for event in event_list:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYUP:
@@ -468,18 +528,18 @@ while run:
             if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing and currentTimerLengthSecs > 60: # hint handler
                 try:
                     dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, "player/cedric.png")
+                    player.xpos, player.ypos = 0, 1100
+                    player.update()
+                    dummy_group.add(dummy)
                     hintDialogue.text = hintDict[int(f'{currentPuzzleID}{hintID}')]
                     hintDialogue.expression = []
                     for i in range(len(hintDialogue.text)):
                         hintDialogue.expression.append("player/cedricHeadshot.png")
-                    player.xpos, player.ypos = 0, 1100
-                    player.update()
-                    dummy_group.add(dummy)
                     forceDialogue(hintDialogue)
                     interactable = False
                     currentTimerLengthSecs -= 30 if hintID == 1 or hintID == 2 else 45
                     hintID += 1
-                except:
+                except KeyError:
                     hintDialogue.text = ["(No hints available.)", " "]
                     hintDialogue.expression = ["what.png", "what.png"]
                     forceDialogue(hintDialogue)
@@ -593,7 +653,7 @@ while run:
         try:
             conversation(dialogueList[0].text, dialogueList[0].expression, dialogueList[0].speed)
         except:
-            print("im going to FUCKING DIE")
+            pass
         if dialogueDone:
             dialogueDone = False
             try: 
