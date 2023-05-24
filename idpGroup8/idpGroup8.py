@@ -13,6 +13,8 @@ clock = pygame.time.Clock()
 # Music and Sounds
 click = pygame.mixer.Sound("dialogueSFX.mp3")
 click.set_volume(0.1)
+deepClick = pygame.mixer.Sound("dialogueSFXLower.mp3")
+deepClick.set_volume(0.1)
 
 # -------------------------------------------- CLASSES -------------------------------------------------------- #
 
@@ -133,6 +135,9 @@ textDone = False
 counter = 0
 activeMessage = 0
 dialogueDone = False
+voiceDict = {
+    "the yippee stares back.png" : deepClick
+}
 
 def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, THE SLOWER IT WILL BE YES THIS IS NOT INTUITIVE OH WELL
     global movement, counter, textDone, activeMessage, message, wholeMessage, dialogueInitiated, dialogueDone
@@ -152,7 +157,10 @@ def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, TH
         textDone = True
     snip = largerFont.render(message[0:counter//speed], True, "White")
     if len(old.replace(" ", "")) < len(message[0:counter//speed].replace(" ", "")):
-        click.play()
+        try:
+            voiceDict[expression[activeMessage]].play()
+        except:
+            click.play()
     screen.blit(dialogueBox.image, dialogueBox.rect)
     screen.blit(snip, (300, 625))
     screen.blit(dialogueSprite, (75, 625))
@@ -232,9 +240,12 @@ inventoryEnv.image.set_alpha(200)
 
 studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyInitDialogue.image.set_alpha(0)
+studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyGrandfatherClockDialogue.image.set_alpha(0)
 studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
-studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
-
+studyPuzzleDialogue.image.set_alpha(0)
+studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
+studyAmalPlayerDialogue.image.set_alpha(0)
 
 hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False, 3, ["placeholder"], ["what.png"])
 hintDialogue.image.set_alpha(0)
@@ -265,7 +276,7 @@ def startScreen():
 
 def study():
     environment_group.add(studyFloor)
-    dialogueTrigger_group.add(journalDialogue)
+    dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue)
     player.image = pygame.transform.rotate(player.image, 90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
@@ -323,12 +334,13 @@ def fadeOut():
     fadingOut = True
 
 def amalgamationDialogueKill():
-    global timerEnabled
+    global timerEnabled, currentPuzzleID
     dialogueKill()
-    scroll.rect.centerx, scroll.rect.centery = amalgamation.rect.centerx, amalgamation.rect.bottom + 70
+    scroll.rect.centerx, scroll.rect.centery = amalgamation.rect.centerx, amalgamation.rect.bottom - 70
     scroll.xpos, scroll.ypos = scroll.rect.centerx, scroll.rect.centery
     puzzleTrigger_group.add(scroll)
     amalgamation.kill()
+    currentPuzzleID = 2
     timerEnabled = True
 
 dialogueEventDict = {
@@ -404,7 +416,7 @@ def journalTextSuccess():
     forceDialogue(studyAmalPlayerDialogue)
 
 textCheckDict = {
-    "0amalgamation" : journalTextSuccess
+    "1amalgamation" : journalTextSuccess
 }
 
 # -------------------------------------------- PUZZLE TIMER -------------------------------------------------------- #
@@ -435,7 +447,7 @@ interactable = True
 
 roomID = 0
 hintID = 1
-currentPuzzleID = 0 # not used for anything right now
+currentPuzzleID = 1 # not used for anything right now
 
 screenTransitionAlpha = 0
 dummyAlpha = 255
@@ -453,10 +465,10 @@ while run:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_e and interactable and not typing: # inventory handler
                 inventoryActive = True if inventoryActive == False else False
-            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing: # hint handler
+            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing and currentTimerLengthSecs > 60: # hint handler
                 try:
                     dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, "player/cedric.png")
-                    hintDialogue.text = hintDict[int(f'{roomID}{hintID}')]
+                    hintDialogue.text = hintDict[int(f'{currentPuzzleID}{hintID}')]
                     hintDialogue.expression = []
                     for i in range(len(hintDialogue.text)):
                         hintDialogue.expression.append("player/cedricHeadshot.png")
@@ -465,6 +477,7 @@ while run:
                     dummy_group.add(dummy)
                     forceDialogue(hintDialogue)
                     interactable = False
+                    currentTimerLengthSecs -= 30 if hintID == 1 or hintID == 2 else 45
                     hintID += 1
                 except:
                     hintDialogue.text = ["(No hints available.)", " "]
@@ -493,7 +506,7 @@ while run:
                 if event.key == pygame.K_BACKSPACE:
                     journalInputText = journalInputText[:-1]
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
-                elif event.key == pygame.K_RETURN and currentPuzzleID is 0:
+                elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
                     try:
                         textCheckDict[f"{currentPuzzleID}{journalInputText}"]
                         journalInputText = ""
@@ -572,7 +585,6 @@ while run:
     if puzzleActive:
         movement = False
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
-        currentPuzzleID = puzzleList[0].pID
         puzzleDict[puzzleList[0].pID]()
 
     if dialogueInitiated:
