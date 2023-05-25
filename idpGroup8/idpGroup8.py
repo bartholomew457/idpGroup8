@@ -50,19 +50,19 @@ class Player(pygame.sprite.Sprite): # player class :)
         global movement
         keys = pygame.key.get_pressed()
         if movement:
-            if keys[pygame.K_LEFT] or keys[pygame.K_a] and self.rect.left >= width - width: 
+            if keys[pygame.K_a] and self.rect.left >= width - width: 
                 self.xpos -= 1*self.speed
                 if "left" not in self.facing:
                     self.image = pygame.transform.flip(self.image, True, False)
                     self.facing = "left"
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d] and self.rect.right <= width:
+            if keys[pygame.K_d] and self.rect.right <= width:
                 self.xpos += 1*self.speed
                 if "right" not in self.facing:
                     self.image = pygame.transform.flip(self.image, True, False)
                     self.facing = "right"
-            if keys[pygame.K_UP] or keys[pygame.K_w] and self.rect.top >= 450:
+            if keys[pygame.K_w] and self.rect.top >= 450:
                 self.ypos -= 1*self.speed
-            if keys[pygame.K_DOWN] or keys[pygame.K_s] and self.rect.bottom <= height:
+            if keys[pygame.K_s] and self.rect.bottom <= height:
                 self.ypos += 1*self.speed
 
 
@@ -320,12 +320,14 @@ studyToGroundRoomTrigger.image.set_alpha(0)
 journal = PuzzleTrigger(742, 559, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, False, "studyRoom/journalOpened.png")
 journalDialogue = DialogueTrigger(742, 559, 73, 100, False,False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
-journalInputBox = pygame.Rect(900, 700, 400, 55)
+journalInputBox = pygame.Rect(900, 600, 400, 55)
 journalInputText = ""
-journalInputTextSurf = font.render(journalInputText, False,False, (255, 255, 255))
+journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
+journalCodeSurf = font.render("5  6  5  4  2  5  10  5  3  1  11  7", False, (255, 0, 0))
+journalCodeRect = journalCodeSurf.get_rect(center = (1050, 300))
 
 # Puzzle 2
-scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png") # CODE FUNCTIONALITY LATER BRUH!!!!!!
+scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png")
 scrollContents = Environment(width/2, height/2, 575, 800, False, False, "studyRoom/scrollOpened.png")
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
@@ -396,13 +398,14 @@ def fadeOut():
     fadingOut = True
 
 def amalgamationDialogueKill():
-    global timerEnabled, currentPuzzleID
+    global timerEnabled, currentPuzzleID, hintID
     dialogueKill()
     scroll.rect.centerx, scroll.rect.centery = amalgamation.rect.centerx, amalgamation.rect.bottom - 70
     scroll.xpos, scroll.ypos = scroll.rect.centerx, scroll.rect.centery
     puzzleTrigger_group.add(scroll)
     amalgamation.kill()
     currentPuzzleID = 2
+    hintID = 1
     timerEnabled = True
 
 def checkCandleAndMatch():
@@ -436,6 +439,11 @@ dialogueEventDict = {
     "(Such as the FIRST thing they would do for the day.)" : hintKill,
     "(But in what order should it be arranged in...?)" : hintKill,
     "(are CONNECTED.)" : hintKill,
+
+    "(Do the red letters refer to specific numbers?)" : hintKill,
+    "(But what am I supposed to do with that time?)" : hintKill,
+    "(How did I not notice that??)" : hintKill,
+
     "(No hints available.)" : hintKill,
 
     "I don't feel so good..." : fadeOut
@@ -466,7 +474,11 @@ newRoomEventDict = {
 hintDict = {
     11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
     12 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
-    13 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "]
+    13 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "],
+
+    21 : ["(That's weird... Why are some letters red?)", "(And what does he mean by \"numbered\"?)", "(Do the red letters refer to specific numbers?)", " "],
+    22 : ["(And that part about \"time\"...)", "(If the red letters refer to specific numbers,)", "(Then those numbers HAVE to compose a certain time.)", "(But what am I supposed to do with that time?)", " "],
+    23 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there.)", "(How did I not notice that??)", " "]
 }
 
 # PUZZLE STUFF YEAH UHUH YUP
@@ -481,6 +493,7 @@ def journalZoom():
         pygame.draw.rect(screen, (128, 128, 128), journalInputBox, 2)
     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
     screen.blit(journalInputTextSurf, (journalInputBox.x + 5, journalInputBox.y + 8))
+    screen.blit(journalCodeSurf, journalCodeRect)
 
 def scrollZoom(): # WIP
     screen.blit(scrollContents.image, scrollContents.rect)
@@ -493,7 +506,7 @@ puzzleDict = {
 }
 
 def journalTextSuccess():
-    global journalInputText, typing, puzzleActive, timerEnabled
+    global journalInputText, typing, puzzleActive, timerEnabled, movement, dialogueInitiated
     journalInputText = ""
     typing = False
     puzzleActive = False
@@ -501,6 +514,9 @@ def journalTextSuccess():
     environment_group.add(amalgamation)
     pygame.time.delay(500)
     forceDialogue(studyAmalPlayerDialogue)
+    #amalgamationDialogueKill() #UNCOMMENT ALL THIS CODE IF YOU WANNA SKIP THE LONG DIALOGUE THAT TAKES ONLY A COUPLE OF YEARS
+    #movement = True
+    #dialogueInitiated = False
 
 textCheckDict = {
     "1amalgamation" : journalTextSuccess
@@ -565,7 +581,7 @@ while run:
                 inventoryActive = True if inventoryActive == False else False
             if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing and currentTimerLengthSecs > 60: # hint handler
                 try:
-                    dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, "player/cedric.png")
+                    dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
                     player.xpos, player.ypos = 0, 1100
                     player.update()
                     dummy_group.add(dummy)
@@ -606,14 +622,14 @@ while run:
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
                 elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
                     try:
-                        textCheckDict[f"{currentPuzzleID}{journalInputText.lower()}"]
-                        journalInputText = ""
-                        typing = False
-                        puzzleActive = False
-                        timerEnabled = False
-                        environment_group.add(amalgamation)
-                        pygame.time.delay(500)
-                        forceDialogue(studyAmalPlayerDialogue)
+                        textCheckDict[f"{currentPuzzleID}{journalInputText.lower()}"]()
+                        #journalInputText = ""
+                        #typing = False
+                        #puzzleActive = False
+                        #timerEnabled = False
+                        #environment_group.add(amalgamation)
+                        #pygame.time.delay(500)
+                        #forceDialogue(studyAmalPlayerDialogue)
                     except KeyError:
                         journalInputText = ""
                         forceDialogue(studyPuzzleDialogue)
