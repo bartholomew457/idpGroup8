@@ -33,14 +33,19 @@ class Player(pygame.sprite.Sprite): # player class :)
         self.direction = ""
         
     def inventory(self):
-        if inventoryActive == True:
+        if inventoryActive:
             screen.blit(inventoryEnv.image, inventoryEnv.rect)
             screen.blit(inventorySlot1.image, inventorySlot1.rect)
             screen.blit(inventorySlot2.image, inventorySlot2.rect)
             screen.blit(inventorySlot3.image, inventorySlot3.rect)
             screen.blit(inventorySlot4.image, inventorySlot4.rect)
+            pressE.rect.centerx = 1500 - 350
+            screen.blit(pressE.image, pressE.rect)
             for i in inventoryList:
                 screen.blit(pygame.transform.scale(pygame.image.load(i).convert_alpha(), (125, 125)), inventoryPositionDict[inventoryList.index(i)].rect)
+        elif inventoryActive == False and interactable:
+            pressE.rect.centerx = 1500
+            screen.blit(pressE.image, pressE.rect)
 
     def itemCheck(self, item):
         if item in inventoryList:
@@ -155,11 +160,6 @@ class PuzzleTrigger(Environment):
         super().__init__(xpos, ypos, width, height, collidable, collectable, image)
         self.pID = pID
 
-#class InventoryItem(Environment):
-#    def __init__(self, xpos, ypos, width, height, collidable:bool, ):
-#        super().__init__()
-#        pass
-
 # --------------------------------------------- FUNCTIONS -------------------------------------------------------- #
 
 textDone = False
@@ -262,7 +262,7 @@ player = Player()
 playerGroup.add(player)
 
 # Starting Screen
-startMenu = Environment(width/2, height/2, width, height, False, False, "CoverImageforapp.png")
+startMenu = Environment(width/2, height/2, width, height, False, False, "miscAssets/CoverImageforapp.png")
 
 # Room 1
 studyFloor = Environment(width/2, height/2, width, height, False, False, "studyRoom\studyRoomBGI.png")
@@ -272,14 +272,16 @@ amalgamation = Environment(883, 600, 400, 600, True, False, "the yippee stares b
 dummy = Environment(1700, 1000, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
 dialogueBox = Environment(width/2, 725, 1500, 250, False, False, "placeholderDialogueBox.png")
 interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key.png")
-exitButton = Environment(1700, 1000, 100, 100, False, False, "exitButton.png")
-screenTransition = Environment(width/2, height/2, width, height, False, False, "solidBlack.png")
+exitButton = Environment(1700, 1000, 100, 100, False, False, "miscAssets/exitButton.png")
+screenTransition = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidBlack.png")
 keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
 keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
 #unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
-inventoryEnv = Environment(1400, height/2, 350, 850, False, False, "solidBlack.png")
+pressE = Environment(1525, 75, 100, 100, False, False, "press e.png")
+
+inventoryEnv = Environment(1400, height/2, 350, 850, False, False, "miscAssets/solidBlack.png")
 inventoryEnv.image.set_alpha(200)
 inventorySlot1 = Environment(1325, 125, 125, 125, False, False, "lightGray.png")
 inventorySlot1.image.set_alpha(175)
@@ -330,7 +332,7 @@ journalDialogue = DialogueTrigger(1270, 378, 73, 100, False,False, 3, ["What's t
 journalInputBox = pygame.Rect(900, 600, 400, 55)
 journalInputText = ""
 journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
-journalCodeSurf = font.render("5  6  5  4  2  5  10  5  3  1  11  7", False, (255, 0, 0))
+journalCodeSurf = font.render("5 6 5 4 2 5 10 5 3 1 11 7", False, (255, 0, 0))
 journalCodeRect = journalCodeSurf.get_rect(center = (1050, 300))
 
 # Puzzle 2
