@@ -589,10 +589,10 @@ puzzleDict = {
 }
 
 def journalTextSuccess():
-    global journalInputText, typing, puzzleActive, timerEnabled, movement, dialogueInitiated
+    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated
     journalInputText = ""
     typing = False
-    puzzleActive = False
+    puzzleTextActive = False
     timerEnabled = False
     environment_group.add(amalgamation)
     pygame.time.delay(500)
@@ -632,7 +632,7 @@ timer_rect = timer_surf.get_rect(center = (width/2, 100))
 run = True
 dialogueInitiated = False
 changingRoomsCond = False
-puzzleActive = False
+puzzleTextActive = False
 inventoryActive = False
 
 timerEnabled = False
@@ -686,12 +686,12 @@ while run:
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing: # puzzle trigger handler
-                if puzzleActive:
-                    puzzleActive = False
+                if puzzleTextActive:
+                    puzzleTextActive = False
                     typing = False
                     movement = True
                 else:
-                    puzzleActive = True
+                    puzzleTextActive = True
             elif event.key == pygame.K_f and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
         if event.type == pygame.KEYDOWN:
@@ -716,7 +716,7 @@ while run:
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
-                puzzleActive = False
+                puzzleTextActive = False
                 typing = False
                 movement = True
             if journalInputBox.collidepoint(event.pos):
@@ -773,7 +773,7 @@ while run:
             except KeyError:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
-    if puzzleActive:
+    if puzzleTextActive:
         movement = False
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
         puzzleDict[puzzleList[0].pID]()
@@ -798,7 +798,7 @@ while run:
             timerDisplaySecs = currentTimerLengthSecs % 60
             timerDisplayMins = int(currentTimerLengthSecs/60) % 60
         else:
-            dialogueInitiated, puzzleActive, changingRoomsCond, typing = False, False, False, False
+            dialogueInitiated, puzzleTextActive, changingRoomsCond, typing = False, False, False, False
             textDone = False
             counter = 0
             activeMessage = 0
