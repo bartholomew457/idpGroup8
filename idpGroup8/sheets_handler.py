@@ -18,7 +18,9 @@ def append_data_to_sheet(username: str, max_time: int, time1: int, time2: int, t
 
     # Select the first worksheet
     worksheet = sheet.sheet1
-
+    
+    # The max_time is controled (aka consistent)
+    max_time = 3600
     # Prepare the data to be appended
     total_time = time1 + time2 + time3
     data = [username, max_time - total_time, format_seconds(max_time), format_seconds(time1), format_seconds(time2), format_seconds(time3), format_seconds(total_time)]
