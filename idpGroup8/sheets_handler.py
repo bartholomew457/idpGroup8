@@ -1,7 +1,7 @@
 import pygsheets
 
-def format_seconds(seconds):
-    # Convert time in seconds to following format: hh:mm:ss
+def format_seconds(seconds: int) -> str:
+    """Convert time in seconds to following format: hh:mm:ss"""
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     
@@ -26,15 +26,3 @@ def append_data_to_sheet(username: str, max_time: int, time1: int, time2: int, t
     # Append the data to the worksheet
     worksheet.append_table(start='A1', end=None, values=[data], dimension='ROWS')
     print('Data appended successfully.')
-
-
-def test():
-  # Example usage
-  username = 'John Doe'
-  max_time = 1 * 60 * 60
-  time1 = 200
-  time2 = 20
-  time3 = 30
-  append_data_to_sheet(username, max_time, time1, time2, time3)
-if __name__ == '__main__':
-   test();
