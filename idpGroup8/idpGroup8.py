@@ -60,7 +60,7 @@ class Player(pygame.sprite.Sprite): # player class :)
                 if "right" not in self.facing:
                     self.image = pygame.transform.flip(self.image, True, False)
                     self.facing = "right"
-            if keys[pygame.K_w] and self.rect.top >= 450:
+            if keys[pygame.K_w] and self.rect.top >= 288:
                 self.ypos -= 1*self.speed
             if keys[pygame.K_s] and self.rect.bottom <= height:
                 self.ypos += 1*self.speed
@@ -104,7 +104,7 @@ class Player(pygame.sprite.Sprite): # player class :)
         self.apply_movement()
         self.collision()
         self.inventory()
-        #pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Environment(pygame.sprite.Sprite): # class for handling images that are displayed on the game
     def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png"):
@@ -266,7 +266,7 @@ startMenu = Environment(width/2, height/2, width, height, False, False, "CoverIm
 
 # Room 1
 studyFloor = Environment(width/2, height/2, width, height, False, False, "studyRoom\studyRoomBGI.png")
-amalgamation = Environment(1300, 600, 400, 600, True, False, "the yippee stares back.png")
+amalgamation = Environment(883, 600, 400, 600, True, False, "the yippee stares back.png")
 
 # Misc Environments
 dummy = Environment(1700, 1000, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
@@ -275,8 +275,9 @@ interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key
 exitButton = Environment(1700, 1000, 100, 100, False, False, "exitButton.png")
 screenTransition = Environment(width/2, height/2, width, height, False, False, "solidBlack.png")
 keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
-match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
-unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
+#match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
+#unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
 inventoryEnv = Environment(1400, height/2, 350, 850, False, False, "solidBlack.png")
 inventoryEnv.image.set_alpha(200)
@@ -302,6 +303,12 @@ studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["(
 studyPuzzleDialogue.image.set_alpha(0)
 studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
 studyAmalPlayerDialogue.image.set_alpha(0)
+
+keyYellowDialogueCheck = DialogueTrigger(662, 702, 15, 40, False, False, 3, ["(Do you have the key for this yellow lock?)", " "], ["studyRoom/keyLock_Y.png", "studyRoom/keyLock_Y.png"], "what.png")
+keyYellowDialogueCheck.image.set_alpha(0)
+keyOrangeDialogueCheck = DialogueTrigger(438, 702, 15, 40, False, False, 3, ["(Do you have the key for this orange lock?)", " "], ["studyRoom/keyLock_O.png", "studyRoom/keyLock_O.png"], "what.png")
+keyOrangeDialogueCheck.image.set_alpha(0)
+
 studyExitDoorDialogue = DialogueTrigger(1575, height/2, 50, 600, False, False, 3, ["(You think about leaving...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyExitDoorDialogue.image.set_alpha(0)
 
@@ -317,9 +324,9 @@ studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False,
 studyToGroundRoomTrigger.image.set_alpha(0)
 
 # Puzzle 1
-journal = PuzzleTrigger(742, 559, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
+journal = PuzzleTrigger(1270, 378, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, False, "studyRoom/journalOpened.png")
-journalDialogue = DialogueTrigger(742, 559, 73, 100, False,False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
+journalDialogue = DialogueTrigger(1270, 378, 73, 100, False,False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
 journalInputBox = pygame.Rect(900, 600, 400, 55)
 journalInputText = ""
 journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
@@ -333,13 +340,14 @@ scrollContents = Environment(width/2, height/2, 575, 800, False, False, "studyRo
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
 def startScreen():
-    global interactable
+    global interactable, currentPuzzleID, hintID, typing
     environment_group.add(startMenu)
-    interactable = True
+    interactable, typing = True, False
+    currentPuzzleID, hintID = 1, 1
 
 def study():
-    environment_group.add(studyFloor, keyO, unlitCandle, match)
-    dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue, studyExitDoorDialogue)
+    environment_group.add(studyFloor, keyO, keyY)
+    dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue, studyExitDoorDialogue, keyOrangeDialogueCheck, keyYellowDialogueCheck)
     player.image = pygame.transform.rotate(player.image, 90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
@@ -408,33 +416,76 @@ def amalgamationDialogueKill():
     hintID = 1
     timerEnabled = True
 
+def checkYellowKey():
+    if player.itemCheck("studyRoom/Key_Y.png"):
+        keyYellowDialogueCheck.kill()
+        inventoryList.pop(inventoryList.index("studyRoom/Key_Y.png"))
+        inventoryList.append("studyRoom/Unlit_Candle.png")
+        highClick.play()
+        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A candle...)", "I can use this with the match to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/Unlit_Candle.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+    else:
+        keyYellowDialogueCheck.kill()
+        forceCustomDialogue(3, ["(Darn, you don't have the key...)", "(Imagine the legendary loot inside...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+
+def checkOrangeKey():
+    if player.itemCheck("studyRoom/Key_O.png"):
+        keyOrangeDialogueCheck.kill()
+        inventoryList.pop(inventoryList.index("studyRoom/Key_O.png"))
+        inventoryList.append("studyRoom/cigarette.png")
+        highClick.play()
+        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A cigarette...)", "What am I supposed to do with this?!", " "], ["studyRoom/keyLock_O.png", "studyRoom/cigarette.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+    else:
+        keyOrangeDialogueCheck.kill()
+        forceCustomDialogue(3, ["(Darn, you don't have the key...)", "(Imagine the amazing loot inside...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+
+def yellowKeyNotReady():
+    dialogueTrigger_group.add(keyYellowDialogueCheck)
+    customDialogue.kill()
+
+def orangeKeyNotReady():
+    dialogueTrigger_group.add(keyOrangeDialogueCheck)
+    customDialogue.kill()
+
 def checkCandleAndMatch():
     if player.itemCheck("studyRoom/Unlit_Candle.png") and player.itemCheck("studyRoom/match.png"):
         studyExitDoorDialogue.kill()
         newRoomTrigger_group.add(studyToGroundRoomTrigger)
         inventoryList.pop(inventoryList.index("studyRoom/Unlit_Candle.png"))
         inventoryList.pop(inventoryList.index("studyRoom/match.png"))
-        print("good job")
-        forceCustomDialogue(3, ["(Oh right! You have that candle and match!)", "(You'll be perfectly fine going outside)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+        inventoryList.append("studyRoom/Lit_Candle.png")
+        highClick.play()
+        forceCustomDialogue(3, ["(Oh right! You have that candle and match!)", "(You'll be perfectly fine going outside.)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
     else:
         studyExitDoorDialogue.kill()
         forceCustomDialogue(3, ["(Nope! It's as pitch dark as the night sky!)", "(In no world are you going in there!)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
-def notReady():
+def candleMatchNotReady():
     dialogueTrigger_group.add(studyExitDoorDialogue)
     customDialogue.kill()
 
-def studyReady():
+def candleMatchReady():
     customDialogue.kill()
+    # gotta add the new room trigger for this one tbh maybe later
 
 dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
     "What's this?" : replaceDialogue,
     "(Perhaps you should try something else?...)" : dialogueKill,
     "Literally, and metaphorically. Try finding a light." : amalgamationDialogueKill,
+
+    "(Do you have the key for this yellow lock?)" : checkYellowKey,
+    "(Do you have the key for this orange lock?)" : checkOrangeKey,
+    "(I can use this on the candle!)" : customDialogue.kill,
+    "(Imagine the legendary loot inside...)" : yellowKeyNotReady,
+    "What am I supposed to do with this?!)" : customDialogue.kill,
+    "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
+
+
+
     "(You think about leaving...)" : checkCandleAndMatch,
 
-    "(In no world are you going in there!)" : notReady,
+    "(In no world are you going in there!)" : candleMatchNotReady,
+    "(You'll be perfectly fine going outside)" : candleMatchReady,
 
     "(Such as the FIRST thing they would do for the day.)" : hintKill,
     "(But in what order should it be arranged in...?)" : hintKill,
@@ -495,7 +546,7 @@ def journalZoom():
     screen.blit(journalInputTextSurf, (journalInputBox.x + 5, journalInputBox.y + 8))
     screen.blit(journalCodeSurf, journalCodeRect)
 
-def scrollZoom(): # WIP
+def scrollZoom():
     screen.blit(scrollContents.image, scrollContents.rect)
     exitButton.rect.centerx, exitButton.rect.centery = scrollContents.rect.right, scrollContents.rect.top
     screen.blit(exitButton.image, exitButton.rect)
@@ -538,7 +589,7 @@ inventoryPositionDict = {
 timerEvent = pygame.USEREVENT + 1
 fadingOutEvent = pygame.USEREVENT + 2
 pygame.time.set_timer(fadingOutEvent, 10)
-timerLengthSecs = 300
+timerLengthSecs = 900
 currentTimerLengthSecs = timerLengthSecs
 timer_surf = largerFont.render("05:00", False, "white")
 timer_rect = timer_surf.get_rect(center = (width/2, 100))
@@ -561,7 +612,7 @@ interactable = True
 
 roomID = 0
 hintID = 1
-currentPuzzleID = 1 # not used for anything right now
+currentPuzzleID = 1
 
 screenTransitionAlpha = 0
 dummyAlpha = 255
@@ -617,19 +668,12 @@ while run:
                 activeMessage += 1
                 counter = 0
             if typing:
-                if event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE or pygame.K_DELETE:
                     journalInputText = journalInputText[:-1]
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
                 elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
                     try:
                         textCheckDict[f"{currentPuzzleID}{journalInputText.lower()}"]()
-                        #journalInputText = ""
-                        #typing = False
-                        #puzzleActive = False
-                        #timerEnabled = False
-                        #environment_group.add(amalgamation)
-                        #pygame.time.delay(500)
-                        #forceDialogue(studyAmalPlayerDialogue)
                     except KeyError:
                         journalInputText = ""
                         forceDialogue(studyPuzzleDialogue)
@@ -679,11 +723,12 @@ while run:
     screen.blit(screenTransition.image, screenTransition.rect)
 
     if changingRoomsCond:
+        inventoryActive = False
         movement = False
         newRoomTriggerList = pygame.sprite.spritecollide(player, newRoomTrigger_group, False)
         try:
             changingRooms(newRoomTriggerList[0].rID, newRoomTriggerList[0].newX, newRoomTriggerList[0].newY, newRoomTriggerList[0].speed, newRoomTriggerList[0].waitMS)
-        except:
+        except IndexError:
             pass
         if bool(newRoomTriggerList) == False:
             screenTransitionAlpha -= 10
@@ -702,6 +747,7 @@ while run:
         puzzleDict[puzzleList[0].pID]()
 
     if dialogueInitiated:
+        inventoryActive = False
         movement = False
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
         try:
