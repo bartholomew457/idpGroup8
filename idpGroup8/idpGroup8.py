@@ -382,10 +382,12 @@ def dialogueKill():
     interactable = True
 
 def hintKill():
+    global timerEnabled
     dialogueKill()
     player.xpos, player.ypos = dummy.xpos, dummy.ypos
     player.update()
     dummy.kill()
+    timerEnabled = True
 
 def replaceDialogue():
     journalDialogue.kill()
@@ -564,6 +566,25 @@ hintDict = {
 # PUZZLE STUFF YEAH UHUH YUP
 
 def journalZoom():
+    global journalInputText, journalInputTextSurf, typing, event_list
+    for event in event_list:
+        if event.type == pygame.KEYDOWN:
+            print("deez")
+            if typing:
+                print("you are typing right now")
+                if event.key == pygame.K_BACKSPACE:
+                    journalInputText = journalInputText[:-1]
+                elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
+                    try:
+                        textCheckDict[f"{currentPuzzleID}{journalInputText.lower()}"]()
+                    except KeyError:
+                        typing = False
+                        forceDialogue(studyPuzzleDialogue)
+                elif journalInputTextSurf.get_width() >= 380:
+                    pass
+                else:
+                    journalInputText += event.unicode
+                    print(event.unicode)
     screen.blit(journalContents.image, journalContents.rect)
     exitButton.rect.centerx, exitButton.rect.centery = journalContents.rect.right, journalContents.rect.top
     screen.blit(exitButton.image, exitButton.rect)
@@ -571,6 +592,7 @@ def journalZoom():
         pygame.draw.rect(screen, (0, 0, 0), journalInputBox, 2)
     else:
         pygame.draw.rect(screen, (128, 128, 128), journalInputBox, 2)
+        journalInputText = "_"
     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
     screen.blit(journalInputTextSurf, (journalInputBox.x + 5, journalInputBox.y + 8))
     screen.blit(journalCodeSurf, journalCodeRect)
@@ -594,9 +616,6 @@ def journalTextSuccess():
     environment_group.add(amalgamation)
     pygame.time.delay(500)
     forceDialogue(studyAmalPlayerDialogue)
-    #amalgamationDialogueKill() #UNCOMMENT ALL THIS CODE IF YOU WANNA SKIP THE LONG DIALOGUE THAT TAKES ONLY A COUPLE OF YEARS
-    #movement = True
-    #dialogueInitiated = False
 
 textCheckDict = {
     "1amalgamation" : journalTextSuccess
@@ -652,7 +671,6 @@ roomDict[roomID]()
 
 
 while run:
-    print(typing)
     event_list = pygame.event.get()
     for event in event_list:
         if event.type == pygame.QUIT:
@@ -698,28 +716,15 @@ while run:
                 textDone = False
                 activeMessage += 1
                 counter = 0
-            if typing:
-                if event.key == pygame.K_BACKSPACE:
-                    journalInputText = journalInputText[:-1]
-                    journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
-                elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
-                    try:
-                        textCheckDict[f"{currentPuzzleID}{journalInputText.lower()}"]()
-                    except KeyError:
-                        journalInputText = ""
-                        forceDialogue(studyPuzzleDialogue)
-                elif journalInputTextSurf.get_width() >= 380:
-                    pass
-                else:
-                    journalInputText += event.unicode
-                    journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
+            elif event.key == pygame.K_RETURN and not textDone and dialogueInitiated:
+                counter += 9999
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
                 puzzleTextActive = False
-                #typing = False
                 movement = True
             if journalInputBox.collidepoint(event.pos) and puzzleList[0].pID == 0:
                 typing = True if not typing else False
+                journalInputText = ""
             else:
                 typing = False
             if startMenu.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
