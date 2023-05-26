@@ -528,10 +528,39 @@ hintDict = {
     12 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
     13 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "],
 
-    21 : ["(That's weird... Why are some letters red?)", "(And what does he mean by \"numbered\"?)", "(Do the red letters refer to specific numbers?)", " "],
+    21 : ["(That's weird... Why are some letters red?)", "(And what does it mean by \"numbered\"?)", "(Do the red letters refer to specific numbers?)", " "],
     22 : ["(And that part about \"time\"...)", "(If the red letters refer to specific numbers,)", "(Then those numbers HAVE to compose a certain time.)", "(But what am I supposed to do with that time?)", " "],
-    23 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there.)", "(How did I not notice that??)", " "]
+    23 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there)", "(How did I not notice that??)", " "],
+
+    31 : ["(These keys have some nice \"colors\".)", "(I feel like I've seen them before...)", " " ],
+    32 : ["(The keys must fit with something else in this room...)", "(Maybe some locks?)", "(But what item in this room is locked?)", " " ],
+    33 : ["(Hey! That \"drawer\" has a lot of locks. )", "(Those locks look pretty similar to the keys.)", " "],
+
+    41 : ["(I think there's something wrong with this record player's SETTINGS...)", "(But how can it be adjusted?)", " "],
+    42 : ["(Maybe a button or part on the record player can help fix it)", "(One of them should do the trick.)", " "],
+    43 : ["(What is this record player saying?)", "(It's speed is too FAST to understand)", " "],
+
+    51 : ["(I can't understand what this paper says!)", "(I should think hard and REFLECT upon what it could mean)", " "], 
+    52 : ["(Most of this house decor seems pretty old...)", "(But that \"mirror\" over there is still in good shape.)", "(Maybe I should take a moment to fix my hair)", " "],
+    53 : ["(This paper seems to contain some sort of \"passcode\".)", "(There should be an item in here that needs this...)", "(But what could it be?)", " "],
+
+    61 : ["(There's only dust and soot in this fireplace!)", "(Oh, wait...)", "(I think I see something hiding in here!)", " "],
+    62 : ["(These little pieces are made out of the same material...)", "(Maybe they CONNECT together.)", " "],
+    63 : ["(It looks like the pieces form a key.)", "(I wonder what it's been used for?)", " "],
+
+    71 : ["(What could the NUMBER for the suitcase be?)", "(This person usually hides their passwords in an item,)", "(so something in this room probably has the code)", " "],
+    72 : ["(There’s a paper placed under the suitcase!)", "(It sure has a lot of WORDS on it.)", "(But how could it relate to a passcode NUMBER?)", " "], 
+    73 : ["(Maybe I should count how many words are on each line?)", " "],
+
+    81 : ["(What are these symbols?)”, “(They must be roman numerals.)", " "],
+    82 : ["(If I remember correctly,)", "(I=1, II=2, III=3, IV=4, V=5, VI=6, VII=7, VIII=8, IX=9, X=10)", " "],
+    83 : ["(This box is locked…)", "(I think it needs a passCODE to be opened.)", " "],
+
+    91 : ["(The newspaper said there had been 5 victims…)", "(I don’t think their names were very long.)", " "],
+    92 : ["(I think she had a niCkname, whAt waS it again?)", " "],
+    93 : ["(I’m pretty sure I was married before I died…)", " "]
 }
+
 
 # PUZZLE STUFF YEAH UHUH YUP
 
@@ -558,10 +587,10 @@ puzzleDict = {
 }
 
 def journalTextSuccess():
-    global journalInputText, typing, puzzleActive, timerEnabled, movement, dialogueInitiated
+    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated
     journalInputText = ""
     typing = False
-    puzzleActive = False
+    puzzleTextActive = False
     timerEnabled = False
     environment_group.add(amalgamation)
     pygame.time.delay(500)
@@ -601,7 +630,7 @@ timer_rect = timer_surf.get_rect(center = (width/2, 100))
 run = True
 dialogueInitiated = False
 changingRoomsCond = False
-puzzleActive = False
+puzzleTextActive = False
 inventoryActive = False
 
 timerEnabled = False
@@ -656,12 +685,12 @@ while run:
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing: # puzzle trigger handler
-                if puzzleActive:
-                    puzzleActive = False
+                if puzzleTextActive:
+                    puzzleTextActive = False
                     typing = False
                     movement = True
                 else:
-                    puzzleActive = True
+                    puzzleTextActive = True
             elif event.key == pygame.K_f and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
         if event.type == pygame.KEYDOWN:
@@ -686,7 +715,7 @@ while run:
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
-                puzzleActive = False
+                puzzleTextActive = False
                 typing = False
                 movement = True
             if journalInputBox.collidepoint(event.pos):
@@ -743,7 +772,7 @@ while run:
             except KeyError:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
-    if puzzleActive:
+    if puzzleTextActive:
         movement = False
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
         puzzleDict[puzzleList[0].pID]()
@@ -768,7 +797,7 @@ while run:
             timerDisplaySecs = currentTimerLengthSecs % 60
             timerDisplayMins = int(currentTimerLengthSecs/60) % 60
         else:
-            dialogueInitiated, puzzleActive, changingRoomsCond, typing = False, False, False, False
+            dialogueInitiated, puzzleTextActive, changingRoomsCond, typing = False, False, False, False
             textDone = False
             counter = 0
             activeMessage = 0
