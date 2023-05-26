@@ -278,7 +278,7 @@ screenTransition = Environment(width/2, height/2, width, height, False, False, "
 keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
 keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
-#unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
 pressE = Environment(1525, 75, 100, 100, False, False, "press e.png")
 
@@ -309,7 +309,7 @@ deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 5, ["Uh oh...
 # New Room Triggers
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False,False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
 studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False,False, 1, 978, 842, 2, 3000)
-studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2, None, None, None, None)
+studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, None, None, None, None, None) # make sure to change this from "None, None, None, None, None" when the first room is done
 studyToGroundRoomTrigger.image.set_alpha(0)
 
 # Puzzle 1
@@ -348,7 +348,7 @@ def startScreen():
     currentPuzzleID, hintID = 1, 1
 
 def study():
-    environment_group.add(studyFloor, keyO, keyY)
+    environment_group.add(studyFloor, keyO, keyY, unlitCandle)
     dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue, studyExitDoorDialogue, keyOrangeDialogueCheck, keyYellowDialogueCheck)
     player.image = pygame.transform.rotate(player.image, 90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
@@ -427,9 +427,9 @@ def checkYellowKey():
     if player.itemCheck("studyRoom/Key_Y.png"):
         keyYellowDialogueCheck.kill()
         inventoryList.pop(inventoryList.index("studyRoom/Key_Y.png"))
-        inventoryList.append("studyRoom/Unlit_Candle.png")
+        inventoryList.append("studyRoom/boxOfMatches.png")
         highClick.play()
-        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A candle...)", "I can use this with the match to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/Unlit_Candle.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A match...)", "I can use this with the candle to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/boxOfMatches.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
     else:
         keyYellowDialogueCheck.kill()
         forceCustomDialogue(3, ["(Darn, you don't have the key...)", "(Imagine the legendary loot inside...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
@@ -454,11 +454,11 @@ def orangeKeyNotReady():
     customDialogue.kill()
 
 def checkCandleAndMatch():
-    if player.itemCheck("studyRoom/Unlit_Candle.png") and player.itemCheck("studyRoom/match.png"):
+    if player.itemCheck("studyRoom/boxOfMatches.png") and player.itemCheck("studyRoom/Unlit_Candle.png"):
         studyExitDoorDialogue.kill()
-        newRoomTrigger_group.add(studyToGroundRoomTrigger)
+        #newRoomTrigger_group.add(studyToGroundRoomTrigger)
         inventoryList.pop(inventoryList.index("studyRoom/Unlit_Candle.png"))
-        inventoryList.pop(inventoryList.index("studyRoom/match.png"))
+        inventoryList.pop(inventoryList.index("studyRoom/boxOfMatches.png"))
         inventoryList.append("studyRoom/Lit_Candle.png")
         highClick.play()
         forceCustomDialogue(3, ["(Oh right! You have that candle and match!)", "(You'll be perfectly fine going outside.)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
@@ -472,7 +472,7 @@ def candleMatchNotReady():
 
 def candleMatchReady():
     customDialogue.kill()
-    # gotta add the new room trigger for this one tbh maybe later
+    # gotta add the new room trigger for this one later
 
 dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
@@ -484,13 +484,13 @@ dialogueEventDict = {
     "(Do you have the key for this orange lock?)" : checkOrangeKey,
     "I can use this with the match to leave!" : customDialogue.kill,
     "(Imagine the legendary loot inside...)" : yellowKeyNotReady,
-    "What am I supposed to do with this?!)" : customDialogue.kill,
+    "What am I supposed to do with this?!" : customDialogue.kill,
     "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
 
 
     "(You think about leaving...)" : checkCandleAndMatch,
     "(In no world are you going in there!)" : candleMatchNotReady,
-    "(You'll be perfectly fine going outside)" : candleMatchReady,
+    "(You'll be perfectly fine going outside.)" : candleMatchReady,
 
     "(Such as the FIRST thing they would do for the day.)" : hintKill,
     "(But in what order should it be arranged in...?)" : hintKill,
@@ -699,7 +699,7 @@ while run:
                     interactable = False
             if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable and not typing: # dialogue handler
                 dialogueInitiated = True
-                interactable = False
+                interactable, movement = False, False
                 counter = 0
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
@@ -817,7 +817,8 @@ while run:
                 dummy_group.add(dummy)
             player.xpos, player.ypos = 1800, 0
             player.update()
-            forceDialogue(deathDialogue)
+            forceCustomDialogue(5, ["Uh oh...", "I don't feel so good...", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+            #forceDialogue(deathDialogue)
             timerEnabled = False
         timer_surf = largerFont.render(f"{timerDisplayMins:02}:{timerDisplaySecs:02}", False, "White")
         screen.blit(timer_surf, timer_rect)
