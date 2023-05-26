@@ -484,7 +484,6 @@ dialogueEventDict = {
     "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
 
 
-
     "(You think about leaving...)" : checkCandleAndMatch,
     "(In no world are you going in there!)" : candleMatchNotReady,
     "(You'll be perfectly fine going outside)" : candleMatchReady,
@@ -521,7 +520,7 @@ newRoomEventDict = {
     1 : wakeUp,
 }
 
-# HINT DICTIONARY AND STUFF YEAH
+# HINT DICTIONARY
 
 hintDict = {
     11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
@@ -653,6 +652,7 @@ roomDict[roomID]()
 
 
 while run:
+    print(typing)
     event_list = pygame.event.get()
     for event in event_list:
         if event.type == pygame.QUIT:
@@ -716,11 +716,13 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
                 puzzleTextActive = False
-                typing = False
+                #typing = False
                 movement = True
-            if journalInputBox.collidepoint(event.pos):
+            if journalInputBox.collidepoint(event.pos) and puzzleList[0].pID == 0:
                 typing = True if not typing else False
-            elif startMenu.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
+            else:
+                typing = False
+            if startMenu.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
         if timerEnabled: 
             if event.type == timerEvent:
