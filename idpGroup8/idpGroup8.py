@@ -478,7 +478,7 @@ dialogueEventDict = {
 
     "(Do you have the key for this yellow lock?)" : checkYellowKey,
     "(Do you have the key for this orange lock?)" : checkOrangeKey,
-    "(I can use this on the candle!)" : customDialogue.kill,
+    "I can use this with the match to leave!" : customDialogue.kill,
     "(Imagine the legendary loot inside...)" : yellowKeyNotReady,
     "What am I supposed to do with this?!)" : customDialogue.kill,
     "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
@@ -486,7 +486,6 @@ dialogueEventDict = {
 
 
     "(You think about leaving...)" : checkCandleAndMatch,
-
     "(In no world are you going in there!)" : candleMatchNotReady,
     "(You'll be perfectly fine going outside)" : candleMatchReady,
 
@@ -515,7 +514,6 @@ def death():
     currentTimerLengthSecs = timerLengthSecs
     dummyAlpha = 255
     dummy.image.set_alpha(dummyAlpha)
-    hintID = 1
 
 
 newRoomEventDict = {
@@ -643,6 +641,7 @@ while run:
                     hintDialogue.expression = []
                     for i in range(len(hintDialogue.text)):
                         hintDialogue.expression.append("player/cedricHeadshot.png")
+                    timerEnabled = False
                     forceDialogue(hintDialogue)
                     interactable = False
                     currentTimerLengthSecs -= 30 if hintID == 1 or hintID == 2 else 45
@@ -671,7 +670,7 @@ while run:
                 activeMessage += 1
                 counter = 0
             if typing:
-                if event.key == pygame.K_BACKSPACE or pygame.K_DELETE:
+                if event.key == pygame.K_BACKSPACE:
                     journalInputText = journalInputText[:-1]
                     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
                 elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
@@ -775,7 +774,7 @@ while run:
             activeMessage = 0
             dialogueDone = False
             if dummy not in dummy_group:
-                dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, "player/cedric.png")
+                dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
                 dummy_group.add(dummy)
             player.xpos, player.ypos = 1800, 0
             player.update()
