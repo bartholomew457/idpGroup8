@@ -168,7 +168,7 @@ counter = 0
 activeMessage = 0
 dialogueDone = False
 voiceDict = {
-    "the yippee stares back.png" : deepClick
+    "Amalgamation.png" : deepClick
 }
 
 def conversation(text, expression, speed): # BTW FOR SPEED, THE HIGHER IT IS, THE SLOWER IT WILL BE YES THIS IS NOT INTUITIVE OH WELL
@@ -267,7 +267,7 @@ startMenu = Environment(width/2, height/2, width, height, False, False, "miscAss
 
 # Room 1
 studyFloor = Environment(width/2, height/2, width, height, False, False, "studyRoom\studyRoomBGI.png")
-amalgamation = Environment(883, 600, 400, 600, True, False, "the yippee stares back.png")
+amalgamation = Environment(883, 600, 400, 600, True, False, "Amalgamation.png")
 
 # Misc Environments
 dummy = Environment(1700, 1000, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
@@ -302,18 +302,8 @@ studyInitDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["What
 studyInitDialogue.image.set_alpha(0)
 studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False,False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyGrandfatherClockDialogue.image.set_alpha(0)
-studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
-studyPuzzleDialogue.image.set_alpha(0)
-studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png", "the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png","the yippee stares back.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "the yippee stares back.png", "the yippee stares back.png", "the yippee stares back.png"])
+studyAmalPlayerDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png"])
 studyAmalPlayerDialogue.image.set_alpha(0)
-
-keyYellowDialogueCheck = DialogueTrigger(662, 702, 15, 40, False, False, 3, ["(Do you have the key for this yellow lock?)", " "], ["studyRoom/keyLock_Y.png", "studyRoom/keyLock_Y.png"], "what.png")
-keyYellowDialogueCheck.image.set_alpha(0)
-keyOrangeDialogueCheck = DialogueTrigger(438, 702, 15, 40, False, False, 3, ["(Do you have the key for this orange lock?)", " "], ["studyRoom/keyLock_O.png", "studyRoom/keyLock_O.png"], "what.png")
-keyOrangeDialogueCheck.image.set_alpha(0)
-
-studyExitDoorDialogue = DialogueTrigger(1575, height/2, 50, 600, False, False, 3, ["(You think about leaving...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
-studyExitDoorDialogue.image.set_alpha(0)
 
 hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["placeholder"], ["what.png"])
 hintDialogue.image.set_alpha(0)
@@ -330,15 +320,30 @@ studyToGroundRoomTrigger.image.set_alpha(0)
 journal = PuzzleTrigger(1270, 378, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
 journalContents = Environment(width/2, height/2, 1200, 750, False, False, "studyRoom/journalOpened.png")
 journalDialogue = DialogueTrigger(1270, 378, 73, 100, False,False, 3, ["What's this?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom\journalAsset.png")
+journalDialogueAftermath = DialogueTrigger(1278, 378, 73, 100, False, False, 3, ["(Somehow, the journal is completely empty...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"], "studyRoom/journalAsset.png")
 journalInputBox = pygame.Rect(900, 600, 400, 55)
 journalInputText = ""
 journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
 journalCodeSurf = font.render("5 6 5 4 2 5 10 5 3 1 11 7", False, (255, 0, 0))
 journalCodeRect = journalCodeSurf.get_rect(center = (1050, 300))
+studyPuzzleDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["(You feel a weird sense of unfulfillment...)", "(Perhaps you should try something else?...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyPuzzleDialogue.image.set_alpha(0)
 
 # Puzzle 2
 scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png")
 scrollContents = Environment(width/2, height/2, 575, 800, False, False, "studyRoom/scrollOpened.png")
+# for the dialogue that plays after your complete the clock puzzle and pick up the candle forceCustomDialogue(3, ["A candle!", "I just need something to light this!"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+
+# Puzzle 3
+keyYellowDialogueCheck = DialogueTrigger(662, 702, 15, 40, False, False, 3, ["(Do you have the key for this yellow lock?)", " "], ["studyRoom/keyLock_Y.png", "studyRoom/keyLock_Y.png"], "what.png")
+keyYellowDialogueCheck.image.set_alpha(0)
+keyOrangeDialogueCheck = DialogueTrigger(438, 702, 15, 40, False, False, 3, ["(Do you have the key for this orange lock?)", " "], ["studyRoom/keyLock_O.png", "studyRoom/keyLock_O.png"], "what.png")
+keyOrangeDialogueCheck.image.set_alpha(0)
+
+studyExitDoorDialogue = DialogueTrigger(1575, height/2, 50, 600, False, False, 3, ["(You think about leaving...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyExitDoorDialogue.image.set_alpha(0)
+# for the dialogue that plays when the flashback cutscene new room im going to have a stroke forceCustomDialogue(3, ["Mr. Kensworth!", "Mr. Kensworth!",  "Your new brand of cigarettes has been flying off the shelves!",  "How does it feel!", "Oh please, just call me by my first name, Cedric.", But it has been absolutely splendid!",  "I’m making more clams than I know what to do with."], ["reporter.png", "reporter.png", "reporter.png", "reporter.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+# for the dialogue that plays AFTER the flashback cutscene new room im going to have a stroke forceCustomDialogue(3, ["Kensworth..?", "Cedric Kensworth...", "That was my name wasn’t it? I was rather successful.", "...But how did I die?"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
@@ -415,8 +420,11 @@ def amalgamationDialogueKill():
     dialogueKill()
     scroll.rect.centerx, scroll.rect.centery = amalgamation.rect.centerx, amalgamation.rect.bottom - 70
     scroll.xpos, scroll.ypos = scroll.rect.centerx, scroll.rect.centery
+    dialogueTrigger_group.add(journalDialogueAftermath)
     puzzleTrigger_group.add(scroll)
+    studyGrandfatherClockDialogue.kill()
     amalgamation.kill()
+    journal.kill()
     currentPuzzleID = 2
     hintID = 1
     timerEnabled = True
@@ -569,9 +577,7 @@ def journalZoom():
     global journalInputText, journalInputTextSurf, typing, event_list
     for event in event_list:
         if event.type == pygame.KEYDOWN:
-            print("deez")
             if typing:
-                print("you are typing right now")
                 if event.key == pygame.K_BACKSPACE:
                     journalInputText = journalInputText[:-1]
                 elif event.key == pygame.K_RETURN and currentPuzzleID == 1:
@@ -584,7 +590,6 @@ def journalZoom():
                     pass
                 else:
                     journalInputText += event.unicode
-                    print(event.unicode)
     screen.blit(journalContents.image, journalContents.rect)
     exitButton.rect.centerx, exitButton.rect.centery = journalContents.rect.right, journalContents.rect.top
     screen.blit(exitButton.image, exitButton.rect)
@@ -671,6 +676,7 @@ roomDict[roomID]()
 
 
 while run:
+    print(textDone)
     event_list = pygame.event.get()
     for event in event_list:
         if event.type == pygame.QUIT:
@@ -700,6 +706,7 @@ while run:
                     interactable = False
             if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable and not typing: # dialogue handler
                 dialogueInitiated = True
+                movement = False
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing: # puzzle trigger handler
@@ -716,7 +723,7 @@ while run:
                 textDone = False
                 activeMessage += 1
                 counter = 0
-            elif event.key == pygame.K_RETURN and not textDone and dialogueInitiated:
+            elif event.key == pygame.K_RETURN and not textDone:
                 counter += 9999
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
@@ -786,7 +793,7 @@ while run:
 
     if dialogueInitiated:
         inventoryActive = False
-        movement = False
+        #movement = False
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
         try:
             conversation(dialogueList[0].text, dialogueList[0].expression, dialogueList[0].speed)
