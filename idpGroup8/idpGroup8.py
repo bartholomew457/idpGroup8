@@ -1,3 +1,5 @@
+# For each of my (Nick's) additions to the code I wrote "NH" as a comment to make it easier to locate
+import math # NH
 import pygame
 import sheets_handler 
 from oauth2client.service_account import ServiceAccountCredentials 
@@ -113,7 +115,7 @@ class Player(pygame.sprite.Sprite): # player class :)
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Environment(pygame.sprite.Sprite): # class for handling images that are displayed on the game
-    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png"):
+    def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png", angle = 0): #NH added the "angle" attribute 
         super().__init__()
         self.xpos = xpos
         self.ypos = ypos
@@ -122,6 +124,7 @@ class Environment(pygame.sprite.Sprite): # class for handling images that are di
         self.rect = self.image.get_rect(center = (self.xpos, self.ypos))
         self.collidable = collidable
         self.collectable = collectable
+        self.angle = angle
 
     def apply_change(self):
         self.rect.centerx = self.xpos
@@ -139,6 +142,20 @@ class Environment(pygame.sprite.Sprite): # class for handling images that are di
                             highClick.play()
         except:
             pass
+    
+     # NH A function used to return images rotated around their center, to whatever the angle attribute states.
+    def rotImage(self):
+        while self.angle >= 360:
+            self.angle += -360
+        while self.angle < 0:
+            self.angle += 360
+        orig_rect = self.image.get_rect()
+        rot_image = pygame.transform.rotate(self.image, self.angle)
+        rot_rect = orig_rect.copy()
+        rot_rect.center = rot_image.get_rect().center
+        rot_image = rot_image.subsurface(rot_rect).copy()
+        return rot_image
+        
 
 class DialogueTrigger(Environment): # class for handling images that will play dialogue when F key is pressed
     def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, speed, text, expression, image = "what.png"):
@@ -242,6 +259,40 @@ def forceNewRoom(roomTrigger):
     newRoomTrigger_group.add(roomTrigger)
     changingRoomsCond, interactable = True, False
 
+# NH Here is a little function I made to quickly get the distance between two points
+def getDist(loc1, loc2, ret=3):
+  (loc1x, loc1y) = loc1
+  (loc2x, loc2y) = loc2
+  if ret == 3: 
+    retDist = math.sqrt((loc1x-loc2x)**2)+((loc1y-loc2y)**2)
+  elif ret == 2:
+    retDist = (loc1y-loc2y)
+  elif ret == 1:
+    retDist = (loc1x-loc2x)
+  return retDist
+
+# NH This function tracks your mouse movement around a center point so the change in angle from the image can be added to something (often the angle attribute of an object) 
+def manualTurn(obCenter, mousePos):
+    global manRot
+    prevRot = manRot
+    try:
+        manRot = (180/3.1415)*math.atan(getDist(mousePos,obCenter, 2)/-(getDist(mousePos, obCenter, 1)))
+    except:
+        manRot = 0
+    if getDist(mousePos, obCenter,1) < 0:
+        manRot += 180
+    elif getDist(mousePos, obCenter) > 0:
+        manRot += 360
+    while manRot >= 360:
+        manRot += -360
+    if manRot != prevRot:
+        if abs(manRot - prevRot < 180) and abs(prevRot - manRot  < 180):
+            return (manRot - prevRot)
+        else:
+            return 0
+    else:
+        return 0
+
 # ------------------------------------------- SURFACES (such as text, sprites) -------------------------------------------------------- #
 
 # text related stuff
@@ -275,10 +326,10 @@ dialogueBox = Environment(width/2, 725, 1500, 250, False, False, "placeholderDia
 interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key.png")
 exitButton = Environment(1700, 1000, 100, 100, False, False, "miscAssets/exitButton.png")
 screenTransition = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidBlack.png")
-keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
-keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
+#keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
+#keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
-unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+#unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
 pressE = Environment(1525, 75, 100, 100, False, False, "press e.png")
 
@@ -309,8 +360,8 @@ deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 5, ["Uh oh...
 # New Room Triggers
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False,False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
 studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False,False, 1, 978, 842, 2, 3000)
-studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, None, None, None, None, None) # make sure to change this from "None, None, None, None, None" when the first room is done
-studyToGroundRoomTrigger.image.set_alpha(0)
+#studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2, None, None, None, None)
+#studyToGroundRoomTrigger.image.set_alpha(0)
 
 # Puzzle 1
 journal = PuzzleTrigger(1270, 378, 73, 100, False,True, 0, "studyRoom\journalAsset.png")
@@ -324,8 +375,19 @@ journalCodeSurf = font.render("5 6 5 4 2 5 10 5 3 1 11 7", False, (255, 0, 0))
 journalCodeRect = journalCodeSurf.get_rect(center = (1075, 300))
 
 # Puzzle 2
-scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png")
+scroll = PuzzleTrigger(1700, 1000, 100, 100, False,False, 1, "studyRoom\scrollAsset.png") #NH 
 scrollContents = Environment(width/2, height/2, 575, 800, False, False, "studyRoom/scrollOpened.png")
+clockHour = 5
+clockMinute = 50
+timeMin = 0
+turningCog = 0
+manRot = 0
+grandFatherClockTrigger = PuzzleTrigger(100,500,100,700,False,False,2)
+grandFatherClockTrigger.image.set_alpha(0)
+grandFatherClockContents = Environment(100,100,1400,700,False,False,"placeholderClockBackround.png")
+grandFatherClockClock = Environment(950,200,500,500,False,False,"placeholderClock.png")
+grandFatherClockCog1 = Environment(150,325,250,250,False,False,"placeholderCog.png")
+grandFatherClockCog2 = Environment(650,325,250,250,False,False,"placeholderCog.png")
 # for the dialogue that plays after your complete the clock puzzle and pick up the candle forceCustomDialogue(3, ["A candle!", "I just need something to light this!"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # Puzzle 3
@@ -336,6 +398,11 @@ keyOrangeDialogueCheck.image.set_alpha(0)
 
 studyExitDoorDialogue = DialogueTrigger(1575, height/2, 50, 600, False, False, 3, ["(You think about leaving...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyExitDoorDialogue.image.set_alpha(0)
+surveyRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2763, 1900, 1200, 2, 2000)
+surveyRoomTrigger.image.set_alpha(0)
+
+# survey
+surveySpace = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidWhite.png")
 # for the dialogue that plays when the user finds the newspaper cutscene new room im going to have a stroke forceCustomDialogue(3, ["Mr. Kensworth!", "Mr. Kensworth!",  "Your new brand of cigarettes has been flying off the shelves!",  "How does it feel!", "Oh please, just call me by my first name, Cedric.", But it has been absolutely splendid!",  "I’m making more clams than I know what to do with."], ["reporter.png", "reporter.png", "reporter.png", "reporter.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 # for the dialogue that plays AFTER the flashback cutscene new room im going to have a stroke forceCustomDialogue(3, ["Kensworth..?", "Cedric Kensworth...", "That was my name wasn’t it? I was rather successful.", "...But how did I die?"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
@@ -348,15 +415,20 @@ def startScreen():
     currentPuzzleID, hintID = 1, 1
 
 def study():
-    environment_group.add(studyFloor, keyO, keyY, unlitCandle)
+    environment_group.add(studyFloor)
     dialogueTrigger_group.add(journalDialogue, studyGrandfatherClockDialogue, studyExitDoorDialogue, keyOrangeDialogueCheck, keyYellowDialogueCheck)
     player.image = pygame.transform.rotate(player.image, 90)
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
+def survey():
+    global timerEnabled
+    timerEnabled = False
+    environment_group.add(surveySpace)
 
 roomDict = {
     0 : startScreen,
     1 : study, 
+    2763 : survey
 }
 
 # Functions for additional things that have to constantly happen when entering a new room, such as the player updating or drawing additional text
@@ -415,12 +487,24 @@ def amalgamationDialogueKill():
     scroll.rect.centerx, scroll.rect.centery = amalgamation.rect.centerx, amalgamation.rect.bottom - 70
     scroll.xpos, scroll.ypos = scroll.rect.centerx, scroll.rect.centery
     dialogueTrigger_group.add(journalDialogueAftermath)
-    puzzleTrigger_group.add(scroll)
+    puzzleTrigger_group.add(scroll, grandFatherClockTrigger)
     studyGrandfatherClockDialogue.kill()
     amalgamation.kill()
     journal.kill()
     currentPuzzleID = 2
     hintID = 1
+    timerEnabled = True
+
+def clockCompleted():
+    global puzzleTextActive, timerEnabled
+    highClick.play()
+    inventoryList.append("studyRoom/Unlit_Candle.png")
+    inventoryList.append("studyRoom/Key_O.png")
+    inventoryList.append("studyRoom/Key_Y.png")
+    customDialogue.kill()
+    grandFatherClockTrigger.kill()
+    dialogueTrigger_group.add(studyGrandfatherClockDialogue)
+    puzzleTextActive = False
     timerEnabled = True
 
 def checkYellowKey():
@@ -429,7 +513,7 @@ def checkYellowKey():
         inventoryList.pop(inventoryList.index("studyRoom/Key_Y.png"))
         inventoryList.append("studyRoom/boxOfMatches.png")
         highClick.play()
-        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A match...)", "I can use this with the candle to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/boxOfMatches.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A box of matches...)", "I can use this with the candle to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/boxOfMatches.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
     else:
         keyYellowDialogueCheck.kill()
         forceCustomDialogue(3, ["(Darn, you don't have the key...)", "(Imagine the legendary loot inside...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
@@ -454,9 +538,9 @@ def orangeKeyNotReady():
     customDialogue.kill()
 
 def checkCandleAndMatch():
-    if player.itemCheck("studyRoom/boxOfMatches.png") and player.itemCheck("studyRoom/Unlit_Candle.png"):
+    if player.itemCheck("studyRoom/Unlit_Candle.png") and player.itemCheck("studyRoom/boxOfMatches.png"):
         studyExitDoorDialogue.kill()
-        #newRoomTrigger_group.add(studyToGroundRoomTrigger)
+        newRoomTrigger_group.add(surveyRoomTrigger)
         inventoryList.pop(inventoryList.index("studyRoom/Unlit_Candle.png"))
         inventoryList.pop(inventoryList.index("studyRoom/boxOfMatches.png"))
         inventoryList.append("studyRoom/Lit_Candle.png")
@@ -472,7 +556,7 @@ def candleMatchNotReady():
 
 def candleMatchReady():
     customDialogue.kill()
-    # gotta add the new room trigger for this one later
+    # gotta add the new room trigger for this one tbh maybe later
 
 dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
@@ -480,11 +564,13 @@ dialogueEventDict = {
     "(Perhaps you should try something else?...)" : dialogueKill,
     "Literally, and metaphorically. Try finding a light." : amalgamationDialogueKill,
 
+    "I wonder where they go...?" : clockCompleted,
+
     "(Do you have the key for this yellow lock?)" : checkYellowKey,
     "(Do you have the key for this orange lock?)" : checkOrangeKey,
     "I can use this with the match to leave!" : customDialogue.kill,
     "(Imagine the legendary loot inside...)" : yellowKeyNotReady,
-    "What am I supposed to do with this?!" : customDialogue.kill,
+    "What am I supposed to do with this?!)" : customDialogue.kill,
     "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
 
 
@@ -500,9 +586,14 @@ dialogueEventDict = {
     "(But what am I supposed to do with that time?)" : hintKill,
     "(How did I not notice that??)" : hintKill,
 
+    "(I feel like I've seen them before...)" : hintKill,
+    "(But what item in this room is locked?)" : hintKill,
+    "(Those locks look pretty similar to the keys.)" : hintKill,
+
     "(No hints available.)" : hintKill,
 
     "I don't feel so good..." : fadeOut
+    
 }
 
 # Functions for new room events that happen after the new room COMPLETELY loads (not like the other room dict)
@@ -518,10 +609,13 @@ def death():
     dummyAlpha = 255
     dummy.image.set_alpha(dummyAlpha)
 
+def surveyIntroDialogue():
+    forceCustomDialogue(3, ["...", "oh, hey there.", "i didn't expect you to get here so soon...", "*psst what am i supposed to do again?*", "OH RIGHT, uhhh...", ""], [])
 
 newRoomEventDict = {
     0 : death,
     1 : wakeUp,
+    2763 : surveyIntroDialogue
 }
 
 # HINT DICTIONARY
@@ -601,9 +695,68 @@ def scrollZoom():
     exitButton.rect.centerx, exitButton.rect.centery = scrollContents.rect.right, scrollContents.rect.top
     screen.blit(exitButton.image, exitButton.rect)
 
+# NH loop for the clock puzzle
+def grandFatherClockDisplay():
+    global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled
+    mousePos = pygame.mouse.get_pos()
+    (mousex, mousey) = mousePos
+    # NH I couldn't get the centers using rect.center or get_rect().center :(
+    clockCenter = (1200,450)
+    (clockCenterx, clockCentery) = (clockCenter)
+    cog1Center = (275,450)
+    (cog1Centerx,cog1Centery) = cog1Center
+    cog2Center = (775,450)
+    (cog2Centerx,cog2Centery) = cog2Center
+    screen.blit((grandFatherClockContents.image), (grandFatherClockContents.xpos, grandFatherClockContents.ypos))
+    screen.blit((grandFatherClockClock.image), (grandFatherClockClock.xpos, grandFatherClockClock.ypos))
+    screen.blit((grandFatherClockCog1.rotImage()), (grandFatherClockCog1.xpos, grandFatherClockCog1.ypos))
+    screen.blit((grandFatherClockCog2.rotImage()), (grandFatherClockCog2.xpos, grandFatherClockCog2.ypos))
+    exitButton.rect.centerx, exitButton.rect.centery = 1500, 100
+    screen.blit(exitButton.image, exitButton.rect)
+    if clockMinute >= 60:
+        clockHour += 1
+        clockMinute = 0
+    elif clockMinute < 0:
+        clockHour += -1
+        clockMinute = 59
+    timeMin = clockHour*60 + clockMinute
+    (clockHourx,clockHoury) = (100*math.cos(3.14/6*(clockHour-3+((3.14/30)*clockMinute/6)))+clockCenterx,100*math.sin(3.14/6*(clockHour-3+((3.14/30)*clockMinute/6)))+clockCentery)
+    (clockMinutex,clockMinutey) = (150*math.cos(3.14/30*(clockMinute-15))+clockCenterx,150*math.sin(3.14/30*(clockMinute-15))+clockCentery)
+    pygame.draw.line(screen, (0,0,0), clockCenter, (clockHourx,clockHoury),16)
+    pygame.draw.line(screen, (0,0,0), clockCenter, (clockMinutex,clockMinutey),10)
+    pygame.draw.circle(screen, (0,0,0), (clockHourx,clockHoury),8)
+    pygame.draw.circle(screen, (0,0,0), (clockMinutex,clockMinutey),5)
+    if pygame.mouse.get_pressed()[0] and not dialogueInitiated:
+        if getDist(cog1Center, mousePos) < 300 and turningCog == 0 :
+            turningCog = 1
+        elif 300 > getDist(mousePos, cog2Center) and turningCog == 0:
+            turningCog = 2
+        if turningCog == 1:
+            turnAmt = manualTurn(cog1Center, mousePos)
+            clockMinute += -(turnAmt/60)
+            grandFatherClockCog1.angle += (turnAmt)/5
+        elif turningCog == 2:
+            turnAmt = manualTurn(cog2Center, mousePos)
+            clockHour += -(turnAmt/450)
+            grandFatherClockCog2.angle += (turnAmt/5)
+    else:
+        if clockHour > 12:
+            clockHour = 1
+        elif clockHour < 1:
+            clockHour = 12
+        clockMinute = round(clockMinute)
+        clockHour = round(clockHour)
+        manRot = 0
+        turningCog = 0
+        if timeMin >= 714 and timeMin <= 716:
+            # NH this is where it detects you've completed it, but I don't know how to stop this puzzle loop.
+            timerEnabled = False
+            forceCustomDialogue(3, ["A candle!", "I just need something to light this!", "And there appears to be some keys here as well.", "I wonder where they go...?", " "], ["studyRoom/Unlit_Candle.png", "player/cedricHeadshot.png", "studyRoom/BothKeys.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+
 puzzleDict = {
     0 : journalZoom,
     1 : scrollZoom,
+    2 : grandFatherClockDisplay,
 }
 
 def journalTextSuccess():
@@ -699,11 +852,12 @@ while run:
                     interactable = False
             if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable and not typing: # dialogue handler
                 dialogueInitiated = True
-                interactable, movement = False, False
+                interactable = False
                 counter = 0
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, newRoomTrigger_group, False)) and interactable and not typing: # new room handler
                 changingRoomsCond = True
                 interactable = False
+                timerEnabled = False
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing: # puzzle trigger handler
                 if puzzleTextActive:
                     puzzleTextActive = False
@@ -817,8 +971,7 @@ while run:
                 dummy_group.add(dummy)
             player.xpos, player.ypos = 1800, 0
             player.update()
-            forceCustomDialogue(5, ["Uh oh...", "I don't feel so good...", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
-            #forceDialogue(deathDialogue)
+            forceDialogue(deathDialogue)
             timerEnabled = False
         timer_surf = largerFont.render(f"{timerDisplayMins:02}:{timerDisplaySecs:02}", False, "White")
         screen.blit(timer_surf, timer_rect)
