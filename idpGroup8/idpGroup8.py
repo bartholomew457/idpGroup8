@@ -44,7 +44,8 @@ class Player(pygame.sprite.Sprite): # player class :)
             screen.blit(inventorySlot2.image, inventorySlot2.rect)
             screen.blit(inventorySlot3.image, inventorySlot3.rect)
             screen.blit(inventorySlot4.image, inventorySlot4.rect)
-            pressE.rect.centerx = 1500 - 350
+            screen.blit(controlsInstructions.image, controlsInstructions.rect)
+            pressE.rect.centerx = 1150
             screen.blit(pressE.image, pressE.rect)
             for i in inventoryList:
                 try:
@@ -117,7 +118,7 @@ class Player(pygame.sprite.Sprite): # player class :)
         self.apply_movement()
         self.collision()
         self.inventory()
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        #pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Environment(pygame.sprite.Sprite): # class for handling images that are displayed on the game
     def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png", angle = 0): #NH added the "angle" attribute 
@@ -335,8 +336,8 @@ dialogueBox = Environment(width/2, 725, 1500, 250, False, False, "placeholderDia
 interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key.png")
 exitButton = Environment(1700, 1000, 100, 100, False, False, "miscAssets/exitButton.png")
 screenTransition = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidBlack.png")
-keyO = Environment(1100, 650, 100, 100, False, True, "studyRoom/Key_O.png")
-keyY = Environment(300, 650, 100, 100, False, True, "studyRoom/Key_Y.png")
+keyO = Environment(1388, 748, 100, 100, False, True, "studyRoom/Key_O.png")
+keyY = Environment(910, 380, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
 unlitCandle = Environment(width/2, 650, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
@@ -352,7 +353,7 @@ inventorySlot3 = Environment(1325, 275, 125, 125, False,False, "lightGray.png")
 inventorySlot3.image.set_alpha(175)
 inventorySlot4 = Environment(1475, 275, 125, 125, False,False, "lightGray.png")
 inventorySlot4.image.set_alpha(175)
-
+controlsInstructions = Environment(1400, 605, 275, 440, False, False, "miscAssets/placeholderControlPanel.png")
 
 # Dialogue Triggers (FOR THE DIALOGUE TRIGGER, ALWAYS ADD ONE EXTRA BLANK DIALOGUE TO THE LIST ALONG WITH A RANDOM IMAGE BECAUSE REASONS)
 customDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["placeholder"], ["player/cedricHeadshot"])
@@ -400,7 +401,8 @@ grandFatherClockCog2 = Environment(650,325,250,250,False,False,"placeholderCog.p
 # for the dialogue that plays after your complete the clock puzzle and pick up the candle forceCustomDialogue(3, ["A candle!", "I just need something to light this!"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # Puzzle 3
-studyGrandFatherClockCompletedDialogue = DialogueTrigger(100, 500, 100, 700, False, False, 3, ["(It's a very nice looking gr-)", "Hey, wait a second...", "There's something inside of this grandfather clock!", " "], ["studyRoom/grandFatherClockHeadshot.png","player/cedricHeadshot.png","player/cedricHeadshot.png","player/cedricHeadshot.png",])
+studyGrandFatherClockCompletedDialogue = DialogueTrigger(100, 500, 100, 700, False, False, 3, ["(It's a very nice looking gr-)", "Hey, wait a second...", "There's something inside of this grandfather clock!", " "], ["studyRoom/grandFatherClockHeadshot.png","player/cedricHeadshot.png","studyRoom/Unlit_Candle.png","studyRoom/Unlit_Candle.png",])
+studyGrandFatherClockCompletedDialogue.image.set_alpha(0)
 keyYellowDialogueCheck = DialogueTrigger(662, 702, 15, 40, False, False, 3, ["(Do you have the key for this yellow lock?)", " "], ["studyRoom/keyLock_Y.png", "studyRoom/keyLock_Y.png"], "what.png")
 keyYellowDialogueCheck.image.set_alpha(0)
 keyOrangeDialogueCheck = DialogueTrigger(438, 702, 15, 40, False, False, 3, ["(Do you have the key for this orange lock?)", " "], ["studyRoom/keyLock_O.png", "studyRoom/keyLock_O.png"], "what.png")
@@ -408,11 +410,15 @@ keyOrangeDialogueCheck.image.set_alpha(0)
 
 studyExitDoorDialogue = DialogueTrigger(1575, height/2, 50, 600, False, False, 3, ["(You think about leaving...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 studyExitDoorDialogue.image.set_alpha(0)
-surveyRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2763, 1900, 1200, 2, 2000)
+surveyRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2763, 1900, 1200, 2, 3000)
 surveyRoomTrigger.image.set_alpha(0)
 
 # survey
 surveySpace = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidWhite.png")
+surveyJournal = Environment(400, 200, 73, 100, False, True, "studyRoom/journalAsset.png")
+surveyGrandFatherClock = Environment(800, 200, 100, 100, False, True, "studyRoom/grandFatherClockHeadshot.png")
+surveyKeys = Environment(400, 500, 100, 100, False, True, "studyRoom/BothKeys.png")
+
 # for the dialogue that plays when the user finds the newspaper cutscene new room im going to have a stroke forceCustomDialogue(3, ["Mr. Kensworth!", "Mr. Kensworth!",  "Your new brand of cigarettes has been flying off the shelves!",  "How does it feel!", "Oh please, just call me by my first name, Cedric.", But it has been absolutely splendid!",  "I’m making more clams than I know what to do with."], ["reporter.png", "reporter.png", "reporter.png", "reporter.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 # for the dialogue that plays AFTER the flashback cutscene new room im going to have a stroke forceCustomDialogue(3, ["Kensworth..?", "Cedric Kensworth...", "That was my name wasn’t it? I was rather successful.", "...But how did I die?"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
@@ -515,6 +521,7 @@ def clockCompleted():
     currentPuzzleID = 3
     hintID = 1
     grandFatherClockTrigger.kill()
+    environment_group.add(keyO, keyY)
     dialogueTrigger_group.add(studyGrandFatherClockCompletedDialogue)
     puzzleTextActive = False
     timerEnabled = True
@@ -522,8 +529,6 @@ def clockCompleted():
 def insideGrandFatherClock():
     highClick.play()
     inventoryList.append("studyRoom/Unlit_Candle.png")
-    inventoryList.append("studyRoom/Key_O.png")
-    inventoryList.append("studyRoom/Key_Y.png")
     studyGrandFatherClockCompletedDialogue.kill()
     dialogueTrigger_group.add(studyGrandfatherClockDialogue)
 
@@ -533,7 +538,7 @@ def checkYellowKey():
         inventoryList.pop(inventoryList.index("studyRoom/Key_Y.png"))
         inventoryList.append("studyRoom/boxOfMatches.png")
         highClick.play()
-        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A box of matches...)", "I can use this with the candle to leave!", " "], ["studyRoom/keyLock_Y.png", "studyRoom/boxOfMatches.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+        forceCustomDialogue(3, ["(Inside the locked cabinet, you find...)", "(A box of matches...)", "What could I possibly do with this??", " "], ["studyRoom/keyLock_Y.png", "studyRoom/boxOfMatches.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
     else:
         keyYellowDialogueCheck.kill()
         forceCustomDialogue(3, ["(Darn, you don't have the key...)", "(Imagine the legendary loot inside...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
@@ -577,8 +582,11 @@ def candleMatchNotReady():
 def candleMatchReady():
     customDialogue.kill()
 
+def askSurveyQuestion1():
+    pass
+
 dialogueEventDict = {
-    "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
+    "(Press E for a tutorial...)" : studyPuzzleInit,
     "What's this?" : replaceDialogue,
     "(Perhaps you should try something else?...)" : dialogueKill,
     "Literally, and metaphorically. Try finding a light." : amalgamationDialogueKill,
@@ -588,9 +596,9 @@ dialogueEventDict = {
 
     "(Do you have the key for this yellow lock?)" : checkYellowKey,
     "(Do you have the key for this orange lock?)" : checkOrangeKey,
-    "I can use this with the match to leave!" : customDialogue.kill,
+    "What could I possibly do with this??" : customDialogue.kill,
     "(Imagine the legendary loot inside...)" : yellowKeyNotReady,
-    "What am I supposed to do with this?!)" : customDialogue.kill,
+    "What am I supposed to do with this?!" : customDialogue.kill,
     "(Imagine the amazing loot inside...)" : orangeKeyNotReady,
 
 
@@ -606,9 +614,11 @@ dialogueEventDict = {
     "(But what am I supposed to do with that time?)" : hintKill,
     "(How did I not notice that??)" : hintKill,
 
-    "(I feel like I've seen them before...)" : hintKill,
-    "(But what item in this room is locked?)" : hintKill,
-    "(Those locks look pretty similar to the keys.)" : hintKill,
+    "(Where could I find something like that?)" : hintKill,
+    "(Just to be sure...)" : hintKill,
+    "(I need to look more closely for ITEMS...)" : hintKill,
+
+    "\"What do you think was the hardest puzzle?\"" : askSurveyQuestion1,
 
     "(No hints available.)" : hintKill,
 
@@ -620,7 +630,7 @@ dialogueEventDict = {
 
 def wakeUp():
     pygame.time.wait(5000)
-    forceCustomDialogue(3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+    forceCustomDialogue(3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", "(Press E for a tutorial...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "what.png", "what.png"])
 
 def death():
     global currentTimerLengthSecs, hintID, interactable, dummyAlpha
@@ -639,7 +649,7 @@ newRoomEventDict = {
     2763 : surveyIntroDialogue
 }
 
-# HINT DICTIONARY
+# -------------------------------------------- HINTS -------------------------------------------------------- #
 
 hintDict = {
     11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
@@ -650,9 +660,9 @@ hintDict = {
     22 : ["(And that part about \"time\"...)", "(If the red letters refer to specific numbers,)", "(Then those numbers HAVE to compose a certain time.)", "(But what am I supposed to do with that time?)", " "],
     23 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there)", "(How did I not notice that??)", " "],
 
-    31 : ["(These keys have some nice \"colors\".)", "(I feel like I've seen them before...)", " " ],
-    32 : ["(The keys must fit with something else in this room...)", "(Maybe some locks?)", "(But what item in this room is locked?)", " " ],
-    33 : ["(Hey! That \"drawer\" has a lot of locks. )", "(Those locks look pretty similar to the keys.)", " "],
+    31 : ["(What did the Amalgamation say again?)", "(That I needed a light to leave?)", "(Where could I find something like that?)", " " ],
+    32 : ["(If changing the grandfather clock did something,)", "(I should probably check it again...)", "(Just to be sure...)", " " ],
+    33 : ["(Has anything in this room changed at all?)", "(I need to look more closely for ITEMS...)", " "],
 
     41 : ["(I think there's something wrong with this record player's SETTINGS...)", "(But how can it be adjusted?)", " "],
     42 : ["(Maybe a button or part on the record player can help fix it)", "(One of them should do the trick.)", " "],
@@ -680,7 +690,7 @@ hintDict = {
 }
 
 
-# PUZZLE STUFF YEAH UHUH YUP
+# -------------------------------------------- PUZZLES -------------------------------------------------------- #
 
 def journalZoom():
     global journalInputText, journalInputTextSurf, typing, event_list
@@ -719,6 +729,7 @@ def scrollZoom():
 # NH loop for the clock puzzle
 def grandFatherClockDisplay():
     global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled
+    print(timeMin)
     mousePos = pygame.mouse.get_pos()
     (mousex, mousey) = mousePos
     # NH I couldn't get the centers using rect.center or get_rect().center :(
@@ -769,7 +780,7 @@ def grandFatherClockDisplay():
         clockHour = round(clockHour)
         manRot = 0
         turningCog = 0
-        if timeMin >= 714 and timeMin <= 716:
+        if timeMin >= 704 and timeMin <= 706:
             # NH this is where it detects you've completed it, but I don't know how to stop this puzzle loop.
             timerEnabled = False
             forceCustomDialogue(3, ["(You hear something opening...)", "(But where???)", " "], ["studyRoom/grandFatherClockHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png",])
@@ -794,9 +805,9 @@ textCheckDict = {
     "1amalgamation" : journalTextSuccess
 }
 
-# -------------------------------------------- INVENTORY SHENANIGANS -------------------------------------------------------- #
+# -------------------------------------------- INVENTORY -------------------------------------------------------- #
 
-inventoryList = ["studyRoom/boxOfMatches.png", "studyRoom/Unlit_Candle.png"]
+inventoryList = []
 
 inventoryPositionDict = {
     0 : inventorySlot1,
