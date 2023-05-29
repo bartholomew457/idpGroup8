@@ -13,6 +13,8 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("idp")
 clock = pygame.time.Clock()
 
+screen.fill("white")
+
 # Music and Sounds
 click = pygame.mixer.Sound("dialogueSFX.mp3")
 click.set_volume(0.1)
@@ -45,7 +47,10 @@ class Player(pygame.sprite.Sprite): # player class :)
             pressE.rect.centerx = 1500 - 350
             screen.blit(pressE.image, pressE.rect)
             for i in inventoryList:
-                screen.blit(pygame.transform.scale(pygame.image.load(i).convert_alpha(), (125, 125)), inventoryPositionDict[inventoryList.index(i)].rect)
+                try:
+                    screen.blit(pygame.transform.scale(pygame.image.load(i).convert_alpha(), (125, 125)), inventoryPositionDict[inventoryList.index(i)].rect)
+                except :
+                    pass
         elif inventoryActive == False and interactable:
             pressE.rect.centerx = 1500
             screen.blit(pressE.image, pressE.rect)
@@ -137,9 +142,13 @@ class Environment(pygame.sprite.Sprite): # class for handling images that are di
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.rect.collidepoint(event.pos) and self.collectable and interactable:
                         self.kill()
-                        if len(inventoryList) < 4:
-                            inventoryList.append(self.name)
-                            highClick.play()
+                        inventoryList.append(self.name)
+                        highClick.play()
+                        if roomID == 2763:
+                            environment_group.empty()
+                        #if len(inventoryList) < 4:
+                        #    inventoryList.append(self.name)
+                        #    highClick.play()
         except:
             pass
     
@@ -326,10 +335,10 @@ dialogueBox = Environment(width/2, 725, 1500, 250, False, False, "placeholderDia
 interactSign = Environment(1700, 1000, 100, 100, False, False, "miscAssets/F_key.png")
 exitButton = Environment(1700, 1000, 100, 100, False, False, "miscAssets/exitButton.png")
 screenTransition = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidBlack.png")
-#keyO = Environment(300, 800, 100, 100, False, True, "studyRoom/Key_O.png")
-#keyY = Environment(200, 800, 100, 100, False, True, "studyRoom/Key_Y.png")
+keyO = Environment(1100, 650, 100, 100, False, True, "studyRoom/Key_O.png")
+keyY = Environment(300, 650, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
-#unlitCandle = Environment(400, 800, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+unlitCandle = Environment(width/2, 650, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
 pressE = Environment(1525, 75, 100, 100, False, False, "press e.png")
 
@@ -349,7 +358,7 @@ inventorySlot4.image.set_alpha(175)
 customDialogue = DialogueTrigger(1700, 1000, 100, 100, False, False, 3, ["placeholder"], ["player/cedricHeadshot"])
 customDialogue.image.set_alpha(0)
 
-studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False,False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+studyGrandfatherClockDialogue = DialogueTrigger(100, 500, 100, 700, False,False, 3, ["(It's a very nice looking grandfather clock.)", "(Nevermind that, you need to hurry!)", "(After all, the CLOCK is TICKING...)", " "], ["studyRoom/grandFatherClockHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "studyRoom/grandFatherClockHeadshot.png"])
 studyGrandfatherClockDialogue.image.set_alpha(0)
 
 hintDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 3, ["placeholder"], ["what.png"])
@@ -391,6 +400,7 @@ grandFatherClockCog2 = Environment(650,325,250,250,False,False,"placeholderCog.p
 # for the dialogue that plays after your complete the clock puzzle and pick up the candle forceCustomDialogue(3, ["A candle!", "I just need something to light this!"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png"])
 
 # Puzzle 3
+studyGrandFatherClockCompletedDialogue = DialogueTrigger(100, 500, 100, 700, False, False, 3, ["(It's a very nice looking gr-)", "Hey, wait a second...", "There's something inside of this grandfather clock!", " "], ["studyRoom/grandFatherClockHeadshot.png","player/cedricHeadshot.png","player/cedricHeadshot.png","player/cedricHeadshot.png",])
 keyYellowDialogueCheck = DialogueTrigger(662, 702, 15, 40, False, False, 3, ["(Do you have the key for this yellow lock?)", " "], ["studyRoom/keyLock_Y.png", "studyRoom/keyLock_Y.png"], "what.png")
 keyYellowDialogueCheck.image.set_alpha(0)
 keyOrangeDialogueCheck = DialogueTrigger(438, 702, 15, 40, False, False, 3, ["(Do you have the key for this orange lock?)", " "], ["studyRoom/keyLock_O.png", "studyRoom/keyLock_O.png"], "what.png")
@@ -421,9 +431,8 @@ def study():
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
 def survey():
-    global timerEnabled
-    timerEnabled = False
-    environment_group.add(surveySpace)
+    global inventoryList
+    inventoryList = []
 
 roomDict = {
     0 : startScreen,
@@ -440,9 +449,14 @@ def studyExtra():
     player.update()
     environment_group.update(event_list)
 
+def surveyExtra():
+    screen.blit(surveySpace.image, surveySpace.rect)
+    environment_group.update(event_list)
+
 roomExtraDict = {
     0 : startScreenExtra,
-    1 : studyExtra
+    1 : studyExtra,
+    2763 : surveyExtra
 }
 
 # Functions for dialogue events that happen after a specific dialogue plays
@@ -496,16 +510,22 @@ def amalgamationDialogueKill():
     timerEnabled = True
 
 def clockCompleted():
-    global puzzleTextActive, timerEnabled
+    global puzzleTextActive, timerEnabled, currentPuzzleID, hintID
+    customDialogue.kill()
+    currentPuzzleID = 3
+    hintID = 1
+    grandFatherClockTrigger.kill()
+    dialogueTrigger_group.add(studyGrandFatherClockCompletedDialogue)
+    puzzleTextActive = False
+    timerEnabled = True
+
+def insideGrandFatherClock():
     highClick.play()
     inventoryList.append("studyRoom/Unlit_Candle.png")
     inventoryList.append("studyRoom/Key_O.png")
     inventoryList.append("studyRoom/Key_Y.png")
-    customDialogue.kill()
-    grandFatherClockTrigger.kill()
+    studyGrandFatherClockCompletedDialogue.kill()
     dialogueTrigger_group.add(studyGrandfatherClockDialogue)
-    puzzleTextActive = False
-    timerEnabled = True
 
 def checkYellowKey():
     if player.itemCheck("studyRoom/Key_Y.png"):
@@ -556,7 +576,6 @@ def candleMatchNotReady():
 
 def candleMatchReady():
     customDialogue.kill()
-    # gotta add the new room trigger for this one tbh maybe later
 
 dialogueEventDict = {
     "HUH?? WHY AM I ON THE FLOOR?" : studyPuzzleInit,
@@ -564,7 +583,8 @@ dialogueEventDict = {
     "(Perhaps you should try something else?...)" : dialogueKill,
     "Literally, and metaphorically. Try finding a light." : amalgamationDialogueKill,
 
-    "I wonder where they go...?" : clockCompleted,
+    "(But where???)" : clockCompleted,
+    "There's something inside of this grandfather clock!" : insideGrandFatherClock,
 
     "(Do you have the key for this yellow lock?)" : checkYellowKey,
     "(Do you have the key for this orange lock?)" : checkOrangeKey,
@@ -610,7 +630,8 @@ def death():
     dummy.image.set_alpha(dummyAlpha)
 
 def surveyIntroDialogue():
-    forceCustomDialogue(3, ["...", "oh, hey there.", "i didn't expect you to get here so soon...", "*psst what am i supposed to do again?*", "OH RIGHT, uhhh...", ""], [])
+    pygame.time.wait(1000)
+    forceCustomDialogue(3, ["...", "oh, hey there.", "i didn't expect you to get here so soon...", "*psst what am i supposed to do again?*", "OH RIGHT, uhhh...", "\"What do you think was the hardest puzzle?\"", " "], ["what.png","what.png","what.png","what.png","what.png","what.png","what.png",])
 
 newRoomEventDict = {
     0 : death,
@@ -751,7 +772,7 @@ def grandFatherClockDisplay():
         if timeMin >= 714 and timeMin <= 716:
             # NH this is where it detects you've completed it, but I don't know how to stop this puzzle loop.
             timerEnabled = False
-            forceCustomDialogue(3, ["A candle!", "I just need something to light this!", "And there appears to be some keys here as well.", "I wonder where they go...?", " "], ["studyRoom/Unlit_Candle.png", "player/cedricHeadshot.png", "studyRoom/BothKeys.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+            forceCustomDialogue(3, ["(You hear something opening...)", "(But where???)", " "], ["studyRoom/grandFatherClockHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png",])
 
 puzzleDict = {
     0 : journalZoom,
@@ -775,7 +796,7 @@ textCheckDict = {
 
 # -------------------------------------------- INVENTORY SHENANIGANS -------------------------------------------------------- #
 
-inventoryList = []
+inventoryList = ["studyRoom/boxOfMatches.png", "studyRoom/Unlit_Candle.png"]
 
 inventoryPositionDict = {
     0 : inventorySlot1,
@@ -830,7 +851,7 @@ while run:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_e and interactable and not typing: # inventory handler
                 inventoryActive = True if inventoryActive == False else False
-            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing and currentTimerLengthSecs > 60: # hint handler
+            if event.key == pygame.K_h and not changingRoomsCond and not dialogueInitiated and not typing and currentTimerLengthSecs > 60 and roomID != 2763: # hint handler
                 try:
                     dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
                     player.xpos, player.ypos = 0, 1100
