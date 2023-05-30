@@ -3,7 +3,7 @@ import math # NH
 import pygame
 import sheets_handler 
 from oauth2client.service_account import ServiceAccountCredentials 
-from sheets_handler import append_data_to_sheet
+from sheets_handler import append_data_to_sheet, retrieve_data_from_sheet
 pygame.init()
 
 # pygame screen
@@ -327,6 +327,12 @@ playerGroup.add(player)
 
 # Starting Screen
 startMenu = Environment(width/2, height/2, width, height, False, False, "miscAssets/CoverImageforapp.png")
+leaderBoardButton = Environment(100, 100, 150, 150, False, False, "miscAssets/placeholderTrophy.png")
+
+leaderBoardTitle = Environment(width/2, 225, 1100, 225, False, False, "miscAssets/placeholderLeaderboardTitle.png")
+
+leaderBoardBackground = Environment(width/2, height/2, 1200, 700, False, False, "miscAssets/solidBlack.png")
+leaderBoardBackground.image.set_alpha(128)
 
 # Room 1
 studyFloor = Environment(width/2, height/2, width, height, False, False, "studyRoom\studyRoomBGI.png")
@@ -428,14 +434,10 @@ surveyHard = Environment(1200, 450, 300, 100, False, True, "miscAssets/hard.png"
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
 def startScreen():
-    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs, puzzle1Time, puzzle2Time, puzzle3Time, hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3
-    environment_group.add(startMenu)
-    print(f"puzzle 1: {puzzle1Time}, puzzle 2: {puzzle2Time}, puzzle 3: {puzzle3Time}")
-    print(f"hints 1: {hintsUsedPuzzle1}, hints 2: {hintsUsedPuzzle2}, hints 3: {hintsUsedPuzzle3}")
+    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs
+    environment_group.add(startMenu, leaderBoardButton)
     currentTimerLengthSecs = timerLengthSecs
     currentPuzzleID, hintID = 1, 0
-    puzzle1Time, puzzle2Time, puzzle3Time = "N/A", "N/A", "N/A"
-    hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3 = "N/A", "N/A", "N/A"
     inventoryList = []
 
 def study():
@@ -461,7 +463,20 @@ roomDict = {
 # Functions for additional things that have to constantly happen when entering a new room, such as the player updating or drawing additional text
 
 def startScreenExtra():
-    pass
+    if leaderBoardActive:
+        screen.blit(leaderBoardBackground.image, leaderBoardBackground.rect)
+        leaderBoard1st_Surf = largerFont.render(leaderBoard1st, False, "White")
+        leaderBoard2nd_Surf = largerFont.render(leaderBoard2nd, False, "White")
+        leaderBoard3rd_Surf = largerFont.render(leaderBoard3rd, False, "White")
+        leaderBoard4th_Surf = largerFont.render(leaderBoard4th, False, "White")
+        leaderBoard5th_Surf = largerFont.render(leaderBoard5th, False, "White")
+        screen.blit(leaderBoardTitle.image, leaderBoardTitle.rect)
+        screen.blit(leaderBoard1st_Surf, leaderBoard1st_Surf.get_rect(center = (width/2, 375)))
+        screen.blit(leaderBoard2nd_Surf, leaderBoard2nd_Surf.get_rect(center = (width/2, 460)))
+        screen.blit(leaderBoard3rd_Surf, leaderBoard3rd_Surf.get_rect(center = (width/2, 545)))
+        screen.blit(leaderBoard4th_Surf, leaderBoard4th_Surf.get_rect(center = (width/2, 630)))
+        screen.blit(leaderBoard5th_Surf, leaderBoard5th_Surf.get_rect(center = (width/2, 715)))
+
 
 def studyExtra():
     player.update()
@@ -687,10 +702,20 @@ def wakeUp():
     forceCustomDialogue(3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", "(Press E for a tutorial...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "what.png", "what.png"])
 
 def death():
-    global interactable, dummyAlpha
+    global interactable, dummyAlpha, puzzle1Time, puzzle2Time, puzzle3Time, hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3, leaderBoard1st, leaderBoard2nd, leaderBoard3rd, leaderBoard4th, leaderBoard5th
     interactable = True
     dummyAlpha = 255
     dummy.image.set_alpha(dummyAlpha)
+    print(f"puzzle 1: {puzzle1Time}, puzzle 2: {puzzle2Time}, puzzle 3: {puzzle3Time}")
+    print(f"hints 1: {hintsUsedPuzzle1}, hints 2: {hintsUsedPuzzle2}, hints 3: {hintsUsedPuzzle3}")
+    puzzle1Time, puzzle2Time, puzzle3Time = "N/A", "N/A", "N/A"
+    hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3 = "N/A", "N/A", "N/A"
+
+    leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
+    leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
+    leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
+    leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
+    leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
 
 def surveyIntroDialogue():
     pygame.time.wait(1000)
@@ -914,6 +939,7 @@ dialogueInitiated = False
 changingRoomsCond = False
 puzzleTextActive = False
 inventoryActive = False
+leaderBoardActive = False
 
 timerEnabled = False
 typing = False
@@ -934,6 +960,13 @@ hintsUsedPuzzle1 = 0
 hintsUsedPuzzle2 = 0
 hintsUsedPuzzle3 = 0
 hints = hintsUsedPuzzle1 + hintsUsedPuzzle2 + hintsUsedPuzzle3
+
+leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
+leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
+leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
+leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
+leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
+
 screenTransitionAlpha = 0
 dummyAlpha = 255
 
@@ -1008,7 +1041,14 @@ while run:
                 pass
             else:
                 typing = False
-            if startMenu.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
+            if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
+                leaderBoardActive = False if leaderBoardActive else True
+                #print(leaderBoard1st)
+                #print(leaderBoard2nd)
+                #print(leaderBoard3rd)
+                #print(leaderBoard4th)
+                #print(leaderBoard5th)
+            elif startMenu.rect.collidepoint(event.pos) and not leaderBoardActive and not changingRoomsCond and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
         if timerEnabled: 
             if event.type == timerEvent:
