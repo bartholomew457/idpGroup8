@@ -245,14 +245,16 @@ def changingRooms(newRoomID, newX, newY, speed:10, waitMS:0): # DON'T WORRY THE 
         player.update()
 
 def forceDialogue(dialogue):
-    global dialogueInitiated, interactable
+    global dialogueInitiated, interactable, movement
+    movement = False
     dialogue.xpos, dialogue.ypos = player.xpos, player.ypos
     dialogue.update()
     dialogueTrigger_group.add(dialogue)
     dialogueInitiated, interactable = True, False
 
 def forceCustomDialogue(speed, dialogueText, dialogueExpressions):
-    global dialogueInitiated, interactable
+    global dialogueInitiated, interactable, movement
+    movement = False
     customDialogue.text = dialogueText
     customDialogue.speed = speed
     customDialogue.expression = dialogueExpressions
@@ -425,12 +427,14 @@ surveyHard = Environment(1200, 450, 300, 100, False, True, "miscAssets/hard.png"
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
 def startScreen():
-    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs, puzzle1Time, puzzle2Time, puzzle3Time
+    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs, puzzle1Time, puzzle2Time, puzzle3Time, hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3
     environment_group.add(startMenu)
     print(f"puzzle 1: {puzzle1Time}, puzzle 2: {puzzle2Time}, puzzle 3: {puzzle3Time}")
+    print(f"hints 1: {hintsUsedPuzzle1}, hints 2: {hintsUsedPuzzle2}, hints 3: {hintsUsedPuzzle3}")
     currentTimerLengthSecs = timerLengthSecs
     currentPuzzleID, hintID = 1, 0
     puzzle1Time, puzzle2Time, puzzle3Time = "N/A", "N/A", "N/A"
+    hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3 = "N/A", "N/A", "N/A"
     inventoryList = []
 
 def study():
@@ -440,8 +444,10 @@ def study():
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
 def survey():
-    global inventoryList, puzzle3Time
+    global inventoryList, puzzle3Time, hintsUsedPuzzle3, hintID
     puzzle3Time = timerLengthSecs - puzzle2Time - puzzle1Time - currentTimerLengthSecs
+    hintsUsedPuzzle3 = hintID
+    hintID = 0
     environment_group.add(surveySpace)
     inventoryList = []
 
@@ -770,7 +776,7 @@ def scrollZoom():
 
 # NH loop for the clock puzzle
 def grandFatherClockDisplay():
-    global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled, puzzle2Time
+    global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled, puzzle2Time, hintsUsedPuzzle2
     mousePos = pygame.mouse.get_pos()
     (mousex, mousey) = mousePos
     # NH I couldn't get the centers using rect.center or get_rect().center :(
@@ -825,6 +831,7 @@ def grandFatherClockDisplay():
             # NH this is where it detects you've completed it, but I don't know how to stop this puzzle loop.
             timerEnabled = False
             puzzle2Time = timerLengthSecs - puzzle1Time - currentTimerLengthSecs
+            hintsUsedPuzzle2 = hintID
             forceCustomDialogue(3, ["(You hear something opening...)", "(But where???)", " "], ["studyRoom/grandFatherClockHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png",])
 
 puzzleDict = {
@@ -834,7 +841,8 @@ puzzleDict = {
 }
 
 def journalTextSuccess():
-    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated, puzzle1Time
+    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated, puzzle1Time, hintsUsedPuzzle1
+    hintsUsedPuzzle1 = hintID
     puzzle1Time = timerLengthSecs - currentTimerLengthSecs
     journalInputText = ""
     typing = False
@@ -917,6 +925,10 @@ puzzle1Time = "N/A"
 puzzle2Time = "N/A"
 puzzle3Time = "N/A"
 
+hintsUsedPuzzle1 = "N/A"
+hintsUsedPuzzle2 = "N/A"
+hintsUsedPuzzle3 = "N/A"
+
 screenTransitionAlpha = 0
 dummyAlpha = 255
 
@@ -954,6 +966,7 @@ while run:
                     forceDialogue(hintDialogue)
                     interactable = False
             if event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, dialogueTrigger_group, False)) and interactable and not typing: # dialogue handler
+                movement = False
                 dialogueInitiated = True
                 interactable = False
                 counter = 0
@@ -961,6 +974,7 @@ while run:
                 changingRoomsCond = True
                 interactable = False
                 timerEnabled = False
+                movement = False
             elif event.key == pygame.K_f and any(pygame.sprite.spritecollide(player, puzzleTrigger_group, False)) and interactable and not typing: # puzzle trigger handler
                 if puzzleTextActive:
                     puzzleTextActive = False
@@ -968,6 +982,7 @@ while run:
                     movement = True
                 else:
                     puzzleTextActive = True
+                    movement = False
             elif event.key == pygame.K_f and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
         if event.type == pygame.KEYDOWN:
@@ -1041,13 +1056,13 @@ while run:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if puzzleTextActive:
-        movement = False
+        #movement = False
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
         puzzleDict[puzzleList[0].pID]()
 
     if dialogueInitiated:
         inventoryActive = False
-        movement = False
+        #movement = False
         dialogueList = pygame.sprite.spritecollide(player, dialogueTrigger_group, False)
         try:
             conversation(dialogueList[0].text, dialogueList[0].expression, dialogueList[0].speed)
