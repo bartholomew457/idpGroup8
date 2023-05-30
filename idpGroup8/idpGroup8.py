@@ -3,6 +3,7 @@ import math # NH
 import pygame
 import sheets_handler 
 from oauth2client.service_account import ServiceAccountCredentials 
+from sheets_handler import append_data_to_sheet
 pygame.init()
 
 # pygame screen
@@ -628,6 +629,7 @@ def surveyToMainScreen():
     playerSurveyResponses = inventoryList
     playerUsername = surveyUsernameText
     surveyUsernameText = ""
+    append_data_to_sheet(surveyUsernameText=surveyUsernameText, max_time=900, puzzle1Time=puzzle1Time, puzzle2Time=puzzle2Time, puzzle3Time=puzzle3Time, hints=hints, hintsUsedPuzzle1=hintsUsedPuzzle1, hintsUsedPuzzle2=hintsUsedPuzzle2, hintsUsedPuzzle3=hintsUsedPuzzle3)
     forceNewRoom(backToStartMenu)
 
 dialogueEventDict = {
@@ -921,14 +923,14 @@ roomID = 0
 hintID = 0
 currentPuzzleID = 1
 
-puzzle1Time = "N/A"
-puzzle2Time = "N/A"
-puzzle3Time = "N/A"
+puzzle1Time = 0
+puzzle2Time = 0
+puzzle3Time = 0
 
-hintsUsedPuzzle1 = "N/A"
-hintsUsedPuzzle2 = "N/A"
-hintsUsedPuzzle3 = "N/A"
-
+hintsUsedPuzzle1 = 0
+hintsUsedPuzzle2 = 0
+hintsUsedPuzzle3 = 0
+hints = hintsUsedPuzzle1 + hintsUsedPuzzle2 + hintsUsedPuzzle3
 screenTransitionAlpha = 0
 dummyAlpha = 255
 
@@ -1056,8 +1058,9 @@ while run:
                 print("could not find an event to run after room change finished (MAY OR MAY NOT BE A PROBLEM)")
 
     if puzzleTextActive:
-        #movement = False
+        movement = False
         puzzleList = pygame.sprite.spritecollide(player, puzzleTrigger_group, False)
+
         puzzleDict[puzzleList[0].pID]()
 
     if dialogueInitiated:

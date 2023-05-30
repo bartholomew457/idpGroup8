@@ -8,7 +8,7 @@ def format_seconds(seconds: int) -> str:
     # Format the time string
     return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
 
-def append_data_to_sheet(username: str, max_time: int, time1: int, time2: int, time3: int) -> None:
+def append_data_to_sheet(surveyUsernameText: str, max_time: int, puzzle1Time: int, puzzle2Time: int, puzzle3Time: int, hints: int, hintsUsedPuzzle1: int, hintsUsedPuzzle2: int, hintsUsedPuzzle3: int) -> None:
     """Appends relevant data of the game to the given Google Sheet"""
     # Load the credentials from the JSON file
     gc = pygsheets.authorize(service_file='service_key_file.json')
@@ -20,10 +20,10 @@ def append_data_to_sheet(username: str, max_time: int, time1: int, time2: int, t
     worksheet = sheet.sheet1
     
     # The max_time is controled (aka consistent)
-    max_time = 3600
+    max_time = 900
     # Prepare the data to be appended
-    total_time = time1 + time2 + time3
-    data = [username, max_time - total_time, format_seconds(max_time), format_seconds(time1), format_seconds(time2), format_seconds(time3), format_seconds(total_time)]
+    total_time = puzzle1Time + puzzle2Time + puzzle3Time
+    data = [surveyUsernameText, max_time - total_time, format_seconds(max_time), format_seconds(puzzle1Time), format_seconds(puzzle2Time), format_seconds(puzzle3Time), format_seconds(total_time), hints, hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3]
 
     # Append the data to the worksheet
     worksheet.append_table(start='A1', end=None, values=[data], dimension='ROWS')
