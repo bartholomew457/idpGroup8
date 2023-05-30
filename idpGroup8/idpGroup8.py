@@ -629,8 +629,28 @@ def surveyToMainScreen():
     playerSurveyResponses = inventoryList
     playerUsername = surveyUsernameText
     hardestPuzzle = playerSurveyResponses[0]
+    if hardestPuzzle == "studyRoom/BothKeys.png":
+        hardestPuzzle = "Key Finding Puzzle"
+    elif hardestPuzzle == "studyRoom/grandFatherClockHeadshot.png":
+        hardestPuzzle = "Grandfather Clock Puzzle"
+    elif hardestPuzzle == "studyRoom/journalAsset.png":
+        hardestPuzzle = "Journal Puzzle"
+
     easiestPuzzle = playerSurveyResponses[1]
+    if easiestPuzzle == "studyRoom/BothKeys.png":
+        easiestPuzzle = "Key Finding Puzzle"
+    elif easiestPuzzle == "studyRoom/grandFatherClockHeadshot.png":
+        easiestPuzzle = "Grandfather Clock Puzzle"
+    elif easiestPuzzle == "studyRoom/journalAsset.png":
+        easiestPuzzle = "Journal Puzzle"
+
     gameRating = playerSurveyResponses[2]
+    if gameRating == "miscAssets/hard.png":
+        gameRating = "Hard"
+    elif gameRating == "miscAssets/perfect.png":
+        gameRating = "Perfect"
+    elif gameRating == "miscAssets/easy.png":
+        gameRating = "Easy"
     surveyUsernameText = ""
     append_data_to_sheet(playerUsername=playerUsername, max_time=900, puzzle1Time=puzzle1Time, puzzle2Time=puzzle2Time, puzzle3Time=puzzle3Time, hints=hints, hintsUsedPuzzle1=hintsUsedPuzzle1, hintsUsedPuzzle2=hintsUsedPuzzle2, hintsUsedPuzzle3=hintsUsedPuzzle3, hardestPuzzle=hardestPuzzle, easiestPuzzle=easiestPuzzle, gameRating=gameRating)
     forceNewRoom(backToStartMenu)
