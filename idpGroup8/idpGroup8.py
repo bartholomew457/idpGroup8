@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("idp")
 clock = pygame.time.Clock()
 
-screen.fill("white")
+currentSurveyQuestion = 1
 
 # Music and Sounds
 click = pygame.mixer.Sound("dialogueSFX.mp3")
@@ -118,7 +118,6 @@ class Player(pygame.sprite.Sprite): # player class :)
         self.apply_movement()
         self.collision()
         self.inventory()
-        #pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Environment(pygame.sprite.Sprite): # class for handling images that are displayed on the game
     def __init__(self, xpos, ypos, width, height, collidable:bool, collectable:bool, image = "what.png", angle = 0): #NH added the "angle" attribute 
@@ -137,6 +136,7 @@ class Environment(pygame.sprite.Sprite): # class for handling images that are di
         self.rect.centery = self.ypos
 
     def update(self, *argv):
+        global currentSurveyQuestion
         self.apply_change()
         try:
             for event in argv[0]:
@@ -146,11 +146,10 @@ class Environment(pygame.sprite.Sprite): # class for handling images that are di
                         inventoryList.append(self.name)
                         highClick.play()
                         if roomID == 2763:
-                            environment_group.empty()
-                        #if len(inventoryList) < 4:
-                        #    inventoryList.append(self.name)
-                        #    highClick.play()
-        except:
+                            puzzleTrigger_group.empty()
+                            currentSurveyQuestion += 1
+                            surveyQuestionDict[currentSurveyQuestion]()
+        except IndexError:
             pass
     
      # NH A function used to return images rotated around their center, to whatever the angle attribute states.
@@ -339,7 +338,7 @@ screenTransition = Environment(width/2, height/2, width, height, False, False, "
 keyO = Environment(1388, 748, 100, 100, False, True, "studyRoom/Key_O.png")
 keyY = Environment(910, 380, 100, 100, False, True, "studyRoom/Key_Y.png")
 #match = Environment(200, 800, 100, 100, False, True, "studyRoom/match.png")
-unlitCandle = Environment(width/2, 650, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
+#unlitCandle = Environment(width/2, 650, 100, 100, False, True, "studyRoom/Unlit_Candle.png")
 
 pressE = Environment(1525, 75, 100, 100, False, False, "press e.png")
 
@@ -369,6 +368,7 @@ deathDialogue = DialogueTrigger(1700, 1000, 100, 100, False,False, 5, ["Uh oh...
 
 # New Room Triggers
 backToStartMenu = NewRoomTrigger(1500, 800, 100, 100, False,False, 0, 1800, 1100, 2, 3000, "placeholderNewRoomTrigger.png")
+backToStartMenu.image.set_alpha(0)
 studyRoomTrigger = NewRoomTrigger(0, 1100, 100, 100, False,False, 1, 978, 842, 2, 3000)
 #studyToGroundRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2, None, None, None, None)
 #studyToGroundRoomTrigger.image.set_alpha(0)
@@ -415,20 +415,23 @@ surveyRoomTrigger.image.set_alpha(0)
 
 # survey
 surveySpace = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidWhite.png")
-surveyJournal = Environment(400, 200, 73, 100, False, True, "studyRoom/journalAsset.png")
-surveyGrandFatherClock = Environment(800, 200, 100, 100, False, True, "studyRoom/grandFatherClockHeadshot.png")
-surveyKeys = Environment(400, 500, 100, 100, False, True, "studyRoom/BothKeys.png")
-
-# for the dialogue that plays when the user finds the newspaper cutscene new room im going to have a stroke forceCustomDialogue(3, ["Mr. Kensworth!", "Mr. Kensworth!",  "Your new brand of cigarettes has been flying off the shelves!",  "How does it feel!", "Oh please, just call me by my first name, Cedric.", But it has been absolutely splendid!",  "I’m making more clams than I know what to do with."], ["reporter.png", "reporter.png", "reporter.png", "reporter.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
-# for the dialogue that plays AFTER the flashback cutscene new room im going to have a stroke forceCustomDialogue(3, ["Kensworth..?", "Cedric Kensworth...", "That was my name wasn’t it? I was rather successful.", "...But how did I die?"], ["player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png"])
+surveyJournal = Environment(400, 450, 146, 200, False, True, "studyRoom/journalAsset.png")
+surveyGrandFatherClock = Environment(800, 450, 200, 200, False, True, "studyRoom/grandFatherClockHeadshot.png")
+surveyKeys = Environment(1200, 450, 200, 200, False, True, "studyRoom/BothKeys.png")
+surveyEasy = Environment(400, 450, 300, 100, False, True, "miscAssets/easy.png")
+surveyPerfect = Environment(800, 450, 300, 100, False, True, "miscAssets/perfect.png")
+surveyHard = Environment(1200, 450, 300, 100, False, True, "miscAssets/hard.png")
 
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
 def startScreen():
-    global interactable, currentPuzzleID, hintID, typing
+    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs, puzzle1Time, puzzle2Time, puzzle3Time
     environment_group.add(startMenu)
-    interactable, typing = True, False
-    currentPuzzleID, hintID = 1, 1
+    print(f"puzzle 1: {puzzle1Time}, puzzle 2: {puzzle2Time}, puzzle 3: {puzzle3Time}")
+    currentTimerLengthSecs = timerLengthSecs
+    currentPuzzleID, hintID = 1, 0
+    puzzle1Time, puzzle2Time, puzzle3Time = "N/A", "N/A", "N/A"
+    inventoryList = []
 
 def study():
     environment_group.add(studyFloor)
@@ -437,7 +440,9 @@ def study():
     player.rect = player.image.get_rect(center = (player.xpos, player.ypos))
 
 def survey():
-    global inventoryList
+    global inventoryList, puzzle3Time
+    puzzle3Time = timerLengthSecs - puzzle2Time - puzzle1Time - currentTimerLengthSecs
+    environment_group.add(surveySpace)
     inventoryList = []
 
 roomDict = {
@@ -456,8 +461,24 @@ def studyExtra():
     environment_group.update(event_list)
 
 def surveyExtra():
-    screen.blit(surveySpace.image, surveySpace.rect)
-    environment_group.update(event_list)
+    global surveyUsernameText, surveyUsernameSurf, currentSurveyQuestion, typing
+    puzzleTrigger_group.update(event_list)
+    if typing:
+        for event in event_list:
+            if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        surveyUsernameText = surveyUsernameText[:-1]
+                    elif event.key == pygame.K_RETURN and len(surveyUsernameText) > 1:
+                        typing = False
+                        currentSurveyQuestion += 1
+                        surveyQuestionDict[currentSurveyQuestion]()
+                    elif surveyUsernameSurf.get_width() >= 380:
+                        pass
+                    else:
+                        surveyUsernameText += event.unicode
+        pygame.draw.rect(screen, (0, 0, 0), surveyUsernameInputBox, 2)
+        surveyUsernameSurf = font.render(surveyUsernameText, False, (0, 0, 0))
+        screen.blit(surveyUsernameSurf, (surveyUsernameInputBox.x + 5, surveyUsernameInputBox.y + 8))
 
 roomExtraDict = {
     0 : startScreenExtra,
@@ -512,15 +533,16 @@ def amalgamationDialogueKill():
     amalgamation.kill()
     journal.kill()
     currentPuzzleID = 2
-    hintID = 1
+    hintID = 0
     timerEnabled = True
 
 def clockCompleted():
     global puzzleTextActive, timerEnabled, currentPuzzleID, hintID
     customDialogue.kill()
     currentPuzzleID = 3
-    hintID = 1
+    hintID = 0
     grandFatherClockTrigger.kill()
+    scroll.kill()
     environment_group.add(keyO, keyY)
     dialogueTrigger_group.add(studyGrandFatherClockCompletedDialogue)
     puzzleTextActive = False
@@ -583,13 +605,30 @@ def candleMatchReady():
     customDialogue.kill()
 
 def askSurveyQuestion1():
-    pass
+    puzzleTrigger_group.add(surveyJournal, surveyGrandFatherClock, surveyKeys)
+
+def askSurveyQuestion2():
+    puzzleTrigger_group.add(surveyJournal, surveyGrandFatherClock, surveyKeys)
+
+def askSurveyQuestion3():
+    puzzleTrigger_group.add(surveyEasy, surveyPerfect, surveyHard)
+
+def askSurveyNickname():
+    global typing
+    typing = True
+
+def surveyToMainScreen():
+    global surveyUsernameText
+    playerSurveyResponses = inventoryList
+    playerUsername = surveyUsernameText
+    surveyUsernameText = ""
+    forceNewRoom(backToStartMenu)
 
 dialogueEventDict = {
     "(Press E for a tutorial...)" : studyPuzzleInit,
     "What's this?" : replaceDialogue,
     "(Perhaps you should try something else?...)" : dialogueKill,
-    "Literally, and metaphorically. Try finding a light." : amalgamationDialogueKill,
+    "Literally, and metaphorically. Try finding a light first." : amalgamationDialogueKill,
 
     "(But where???)" : clockCompleted,
     "There's something inside of this grandfather clock!" : insideGrandFatherClock,
@@ -619,6 +658,10 @@ dialogueEventDict = {
     "(I need to look more closely for ITEMS...)" : hintKill,
 
     "\"What do you think was the hardest puzzle?\"" : askSurveyQuestion1,
+    "uhhhh \"Which do you think was the easiest?\"" : askSurveyQuestion2,
+    "\"Or too hard?\"" : askSurveyQuestion3,
+    "\"Can you please give us a nickname?\"" : askSurveyNickname,
+    "uh thank you for \"answering our survey!\"" : surveyToMainScreen,
 
     "(No hints available.)" : hintKill,
 
@@ -633,9 +676,8 @@ def wakeUp():
     forceCustomDialogue(3, ["What.. where am I?", "I feel so cold.", "HUH?? WHY AM I ON THE FLOOR?", "(Press E for a tutorial...)", " "], ["player/cedricHeadshot.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "what.png", "what.png"])
 
 def death():
-    global currentTimerLengthSecs, hintID, interactable, dummyAlpha
+    global interactable, dummyAlpha
     interactable = True
-    currentTimerLengthSecs = timerLengthSecs
     dummyAlpha = 255
     dummy.image.set_alpha(dummyAlpha)
 
@@ -652,41 +694,41 @@ newRoomEventDict = {
 # -------------------------------------------- HINTS -------------------------------------------------------- #
 
 hintDict = {
-    11 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
-    12 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
-    13 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "],
+    10 : ["(Oh, it's an old journal.)",  "(The type someone would use to write reminders.)", "(Such as the FIRST thing they would do for the day.)", " "],
+    11 : ["(But, you realize the entries are out of ORDER.)", "(This mildly irritates you...)", "(Maybe you should rearrange them properly.)",  "(But in what order should it be arranged in...?)", " "],
+    12 : ["(Maybe that CODE at the bottom,)", "(and the ORDER of the poem,)", "(along with the FIRST letter,)", "(are CONNECTED.)", " "],
 
-    21 : ["(That's weird... Why are some letters red?)", "(And what does it mean by \"numbered\"?)", "(Do the red letters refer to specific numbers?)", " "],
-    22 : ["(And that part about \"time\"...)", "(If the red letters refer to specific numbers,)", "(Then those numbers HAVE to compose a certain time.)", "(But what am I supposed to do with that time?)", " "],
-    23 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there)", "(How did I not notice that??)", " "],
+    20 : ["(That's weird... Why are some letters red?)", "(And what does it mean by \"numbered\"?)", "(Do the red letters refer to specific numbers?)", " "],
+    21 : ["(And that part about \"time\"...)", "(If the red letters refer to specific numbers,)", "(Then those numbers HAVE to compose a certain time.)", "(But what am I supposed to do with that time?)", " "],
+    22 : ["(Oh, right...)", "(There's literally a huge grandfather clock over there)", "(How did I not notice that??)", " "],
 
-    31 : ["(What did the Amalgamation say again?)", "(That I needed a light to leave?)", "(Where could I find something like that?)", " " ],
-    32 : ["(If changing the grandfather clock did something,)", "(I should probably check it again...)", "(Just to be sure...)", " " ],
-    33 : ["(Has anything in this room changed at all?)", "(I need to look more closely for ITEMS...)", " "],
+    30 : ["(What did the Amalgamation say again?)", "(That I needed a light to leave?)", "(Where could I find something like that?)", " " ],
+    31 : ["(If changing the grandfather clock did something,)", "(I should probably check it again...)", "(Just to be sure...)", " " ],
+    32 : ["(Has anything in this room changed at all?)", "(I need to look more closely for ITEMS...)", " "],
 
-    41 : ["(I think there's something wrong with this record player's SETTINGS...)", "(But how can it be adjusted?)", " "],
-    42 : ["(Maybe a button or part on the record player can help fix it)", "(One of them should do the trick.)", " "],
-    43 : ["(What is this record player saying?)", "(It's speed is too FAST to understand)", " "],
+    40 : ["(I think there's something wrong with this record player's SETTINGS...)", "(But how can it be adjusted?)", " "],
+    41 : ["(Maybe a button or part on the record player can help fix it)", "(One of them should do the trick.)", " "],
+    42 : ["(What is this record player saying?)", "(It's speed is too FAST to understand)", " "],
 
-    51 : ["(I can't understand what this paper says!)", "(I should think hard and REFLECT upon what it could mean)", " "], 
-    52 : ["(Most of this house decor seems pretty old...)", "(But that \"mirror\" over there is still in good shape.)", "(Maybe I should take a moment to fix my hair)", " "],
-    53 : ["(This paper seems to contain some sort of \"passcode\".)", "(There should be an item in here that needs this...)", "(But what could it be?)", " "],
+    50 : ["(I can't understand what this paper says!)", "(I should think hard and REFLECT upon what it could mean)", " "], 
+    51 : ["(Most of this house decor seems pretty old...)", "(But that \"mirror\" over there is still in good shape.)", "(Maybe I should take a moment to fix my hair)", " "],
+    52 : ["(This paper seems to contain some sort of \"passcode\".)", "(There should be an item in here that needs this...)", "(But what could it be?)", " "],
 
-    61 : ["(There's only dust and soot in this fireplace!)", "(Oh, wait...)", "(I think I see something hiding in here!)", " "],
-    62 : ["(These little pieces are made out of the same material...)", "(Maybe they CONNECT together.)", " "],
-    63 : ["(It looks like the pieces form a key.)", "(I wonder what it's been used for?)", " "],
+    60 : ["(There's only dust and soot in this fireplace!)", "(Oh, wait...)", "(I think I see something hiding in here!)", " "],
+    61 : ["(These little pieces are made out of the same material...)", "(Maybe they CONNECT together.)", " "],
+    62 : ["(It looks like the pieces form a key.)", "(I wonder what it's been used for?)", " "],
 
-    71 : ["(What could the NUMBER for the suitcase be?)", "(This person usually hides their passwords in an item,)", "(so something in this room probably has the code)", " "],
-    72 : ["(There’s a paper placed under the suitcase!)", "(It sure has a lot of WORDS on it.)", "(But how could it relate to a passcode NUMBER?)", " "], 
-    73 : ["(Maybe I should count how many words are on each line?)", " "],
+    70 : ["(What could the NUMBER for the suitcase be?)", "(This person usually hides their passwords in an item,)", "(so something in this room probably has the code)", " "],
+    71 : ["(There’s a paper placed under the suitcase!)", "(It sure has a lot of WORDS on it.)", "(But how could it relate to a passcode NUMBER?)", " "], 
+    72 : ["(Maybe I should count how many words are on each line?)", " "],
 
-    81 : ["(What are these symbols?)”, “(They must be roman numerals.)", " "],
-    82 : ["(If I remember correctly,)", "(I=1, II=2, III=3, IV=4, V=5, VI=6, VII=7, VIII=8, IX=9, X=10)", " "],
-    83 : ["(This box is locked…)", "(I think it needs a passCODE to be opened.)", " "],
+    80 : ["(What are these symbols?)”, “(They must be roman numerals.)", " "],
+    81 : ["(If I remember correctly,)", "(I=1, II=2, III=3, IV=4, V=5, VI=6, VII=7, VIII=8, IX=9, X=10)", " "],
+    82 : ["(This box is locked…)", "(I think it needs a passCODE to be opened.)", " "],
 
-    91 : ["(The newspaper said there had been 5 victims…)", "(I don’t think their names were very long.)", " "],
-    92 : ["(I think she had a niCkname, whAt waS it again?)", " "],
-    93 : ["(I’m pretty sure I was married before I died…)", " "]
+    90 : ["(The newspaper said there had been 5 victims…)", "(I don’t think their names were very long.)", " "],
+    91 : ["(I think she had a niCkname, whAt waS it again?)", " "],
+    92 : ["(I’m pretty sure I was married before I died…)", " "]
 }
 
 
@@ -728,8 +770,7 @@ def scrollZoom():
 
 # NH loop for the clock puzzle
 def grandFatherClockDisplay():
-    global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled
-    print(timeMin)
+    global clockHour, clockMinute, manRot, timeMin, turningCog, timerEnabled, puzzle2Time
     mousePos = pygame.mouse.get_pos()
     (mousex, mousey) = mousePos
     # NH I couldn't get the centers using rect.center or get_rect().center :(
@@ -783,6 +824,7 @@ def grandFatherClockDisplay():
         if timeMin >= 704 and timeMin <= 706:
             # NH this is where it detects you've completed it, but I don't know how to stop this puzzle loop.
             timerEnabled = False
+            puzzle2Time = timerLengthSecs - puzzle1Time - currentTimerLengthSecs
             forceCustomDialogue(3, ["(You hear something opening...)", "(But where???)", " "], ["studyRoom/grandFatherClockHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png",])
 
 puzzleDict = {
@@ -792,14 +834,15 @@ puzzleDict = {
 }
 
 def journalTextSuccess():
-    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated
+    global journalInputText, typing, puzzleTextActive, timerEnabled, movement, dialogueInitiated, puzzle1Time
+    puzzle1Time = timerLengthSecs - currentTimerLengthSecs
     journalInputText = ""
     typing = False
     puzzleTextActive = False
     timerEnabled = False
     environment_group.add(amalgamation)
     pygame.time.delay(500)
-    forceCustomDialogue(3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us.", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Outside of this room, you're blind.", "Literally, and metaphorically. Try finding a light.", " "], ["Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png"])
+    forceCustomDialogue(3, ["Leave me in my misery.", "You'll have all eternity to see us later.", "Who are you? Let me out of here!", "Who am I? You don't even know who you are.", "Hogwash. Of course I know who I am.", "I'm...", "I am, uhh...", "It's no use. Your fate is eternity here.", "Better if you spend it alone while you can.", "The less you know, the better.", "Ignorance is bliss, my friend...", "But I must know! What is this?", "Well if you insist...you are gone.", "Dead.", "Deceased.", "Dead?!", "What do you mean \"dead\"!!", "You exist in a state of wandering.", "After your death, you ended up here.", "Eventually, your spiritual energy will combine with us, the Amalgamation", "Permanently trapped in this cursed house.", "Most move onto the stars, most are brought peace.", "But not us...", "We are not granted the same privileges, taken so easily.", "Why so verbose, \"move onto the stars\"?", "When one's soul, and mind, are at complete tranquility.", "Only then, does one's world go black,", "awakening amongst stars, glowing with radiance.", "It is, only after what appears to be reality bending,", "periods of time, do these concepts become self-evident.", "For that reason, I will put it in layman's terms;", "Find out the motives behind your appearance here,", "and you'll become one with the stars.", "You're incomplete.", "Why- you! I'll show you!", "I'll find my way out of this blasted place!", "Throughout this house, we've left keys,", "keys to your escape and unknown identity.", "This is a test, a game if you will,", "to see if you truly deserve seeing stars.", "Outside of this room, though, you're blind.", "Literally, and metaphorically. Try finding a light first.", " "], ["Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png", "Amalgamation.png", "player/cedricHeadshot.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "player/cedricHeadshot.png","player/cedricHeadshot.png", "Amalgamation.png", "Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png","Amalgamation.png", "Amalgamation.png"])
 
 textCheckDict = {
     "1amalgamation" : journalTextSuccess
@@ -826,6 +869,30 @@ currentTimerLengthSecs = timerLengthSecs
 timer_surf = largerFont.render("05:00", False, "white")
 timer_rect = timer_surf.get_rect(center = (width/2, 100))
 
+# -------------------------------------------- SURVEY  -------------------------------------------------------- #
+
+def hardestPuzzleQuestion():
+    forceCustomDialogue(3, ["oh okay...", "uhhhh \"Which do you think was the easiest?\"", " "], ["what.png", "what.png", "what.png"])
+
+def difficultyQuestion():
+    forceCustomDialogue(3, ["mhm uh huh", "\"Was the game as a whole too easy?\"", "\"Or too hard?\"", " "], ["what.png", "what.png", "what.png", "what.png"])
+
+def usernameQuestion():
+    forceCustomDialogue(3, ["alright alright awesome", "there's also like one more thing we need,", "\"Can you please give us a nickname?\"", " "], ["what.png", "what.png", "what.png", "what.png"])
+
+def surveyConclusion():
+    forceCustomDialogue(3, ["cool cool cool", "uh thank you for \"answering our survey!\"", " "], ["what.png", "what.png", "what.png"])
+
+surveyQuestionDict = {
+    2 : hardestPuzzleQuestion,
+    3 : difficultyQuestion,
+    4 : usernameQuestion,
+    5 : surveyConclusion
+}
+
+surveyUsernameInputBox = pygame.Rect(600, height/2, 400, 55)
+surveyUsernameText = ""
+
 # -------------------------------------------- GAME VARIABLES -------------------------------------------------------- #
 
 # Game State Variables
@@ -843,8 +910,12 @@ movement = False
 interactable = True
 
 roomID = 0
-hintID = 1
+hintID = 0
 currentPuzzleID = 1
+
+puzzle1Time = "N/A"
+puzzle2Time = "N/A"
+puzzle3Time = "N/A"
 
 screenTransitionAlpha = 0
 dummyAlpha = 255
@@ -873,10 +944,10 @@ while run:
                     for i in range(len(hintDialogue.text)):
                         hintDialogue.expression.append("player/cedricHeadshot.png")
                     timerEnabled = False
-                    forceDialogue(hintDialogue)
                     interactable = False
-                    currentTimerLengthSecs -= 30 if hintID == 1 or hintID == 2 else 45
+                    forceDialogue(hintDialogue)
                     hintID += 1
+                    currentTimerLengthSecs -= 30 if hintID == 1 or hintID == 2 else 45
                 except KeyError:
                     hintDialogue.text = ["(No hints available.)", " "]
                     hintDialogue.expression = ["what.png", "what.png"]
@@ -904,15 +975,17 @@ while run:
                 textDone = False
                 activeMessage += 1
                 counter = 0
-            elif event.key == pygame.K_RETURN and not textDone and counter > 1:
+            elif event.key == pygame.K_RETURN and not textDone and counter > 1 and roomID != 2763:
                 counter += 9999
         if event.type == pygame.MOUSEBUTTONDOWN:
             if exitButton.rect.collidepoint(event.pos):
                 puzzleTextActive = False
                 movement = True
-            if journalInputBox.collidepoint(event.pos) and puzzleList[0].pID == 0:
+            if journalInputBox.collidepoint(event.pos) and puzzleTextActive and puzzleList[0].pID == 0:
                 typing = True if not typing else False
                 journalInputText = ""
+            elif roomID == 2763:
+                pass
             else:
                 typing = False
             if startMenu.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
@@ -993,18 +1066,15 @@ while run:
             timerDisplaySecs = currentTimerLengthSecs % 60
             timerDisplayMins = int(currentTimerLengthSecs/60) % 60
         else:
-            dialogueInitiated, puzzleTextActive, changingRoomsCond, typing = False, False, False, False
-            textDone = False
+            dialogueInitiated, puzzleTextActive, changingRoomsCond, typing, textDone, dialogueDone, timerEnabled = False, False, False, False, False, False, False
             counter = 0
             activeMessage = 0
-            dialogueDone = False
             if dummy not in dummy_group:
                 dummy = Environment(player.xpos, player.ypos, player.image.get_width(), player.image.get_height(), False, False, "player/cedric.png")
                 dummy_group.add(dummy)
             player.xpos, player.ypos = 1800, 0
             player.update()
             forceDialogue(deathDialogue)
-            timerEnabled = False
         timer_surf = largerFont.render(f"{timerDisplayMins:02}:{timerDisplaySecs:02}", False, "White")
         screen.blit(timer_surf, timer_rect)
 
