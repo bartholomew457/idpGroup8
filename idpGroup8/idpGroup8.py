@@ -14,7 +14,11 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("idp")
 clock = pygame.time.Clock()
 
-currentSurveyQuestion = 1
+leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
+leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
+leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
+leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
+leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
 
 # Music and Sounds
 click = pygame.mixer.Sound("dialogueSFX.mp3")
@@ -434,10 +438,10 @@ surveyHard = Environment(1200, 450, 300, 100, False, True, "miscAssets/hard.png"
 # Functions for adding the different things in a room to the correct group, every room is assigned a specific roomID based on the room dictionary. (also some specific things that only need to ran once)
 
 def startScreen():
-    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs
+    global currentPuzzleID, hintID, typing, inventoryList, currentTimerLengthSecs, currentSurveyQuestion
     environment_group.add(startMenu, leaderBoardButton)
     currentTimerLengthSecs = timerLengthSecs
-    currentPuzzleID, hintID = 1, 0
+    currentPuzzleID, hintID, currentSurveyQuestion = 1, 0, 1
     inventoryList = []
 
 def study():
@@ -476,6 +480,8 @@ def startScreenExtra():
         screen.blit(leaderBoard3rd_Surf, leaderBoard3rd_Surf.get_rect(center = (width/2, 545)))
         screen.blit(leaderBoard4th_Surf, leaderBoard4th_Surf.get_rect(center = (width/2, 630)))
         screen.blit(leaderBoard5th_Surf, leaderBoard5th_Surf.get_rect(center = (width/2, 715)))
+        exitButton.rect.centerx, exitButton.rect.centery = leaderBoardBackground.rect.right, leaderBoardBackground.rect.top
+        screen.blit(exitButton.image, exitButton.rect)
 
 
 def studyExtra():
@@ -500,7 +506,9 @@ def surveyExtra():
                         surveyUsernameText += event.unicode
         pygame.draw.rect(screen, (0, 0, 0), surveyUsernameInputBox, 2)
         surveyUsernameSurf = font.render(surveyUsernameText, False, (0, 0, 0))
+        surveyTypeHereLabel = font.render("type here in this box by the way...", False, (0,0,0))
         screen.blit(surveyUsernameSurf, (surveyUsernameInputBox.x + 5, surveyUsernameInputBox.y + 8))
+        screen.blit(surveyTypeHereLabel, (surveyUsernameInputBox.x, surveyUsernameInputBox.y - surveyTypeHereLabel.get_height() - 60))
 
 roomExtraDict = {
     0 : startScreenExtra,
@@ -559,7 +567,12 @@ def amalgamationDialogueKill():
     timerEnabled = True
 
 def clockCompleted():
-    global puzzleTextActive, timerEnabled, currentPuzzleID, hintID
+    global puzzleTextActive, timerEnabled, currentPuzzleID, hintID, clockHour, clockMinute, timeMin, turningCog, manRot
+    clockHour = 5
+    clockMinute = 50
+    timeMin = 0
+    turningCog = 0
+    manRot = 0
     customDialogue.kill()
     currentPuzzleID = 3
     hintID = 0
@@ -941,6 +954,8 @@ def usernameQuestion():
 def surveyConclusion():
     forceCustomDialogue(3, ["cool cool cool", "uh thank you for \"answering our survey!\"", " "], ["what.png", "what.png", "what.png"])
 
+currentSurveyQuestion = 1
+
 surveyQuestionDict = {
     2 : hardestPuzzleQuestion,
     3 : difficultyQuestion,
@@ -981,11 +996,11 @@ hintsUsedPuzzle2 = 0
 hintsUsedPuzzle3 = 0
 hints = hintsUsedPuzzle1 + hintsUsedPuzzle2 + hintsUsedPuzzle3
 
-leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
-leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
-leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
-leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
-leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
+#leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
+#leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
+#leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
+#leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
+#leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
 
 screenTransitionAlpha = 0
 dummyAlpha = 255
@@ -1051,9 +1066,15 @@ while run:
             elif event.key == pygame.K_RETURN and not textDone and counter > 1 and roomID != 2763:
                 counter += 9999
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
+                leaderBoardActive = False if leaderBoardActive else True
             if exitButton.rect.collidepoint(event.pos):
+                pygame.time.wait
                 puzzleTextActive = False
+                leaderBoardActive = False
                 movement = True
+            elif startMenu.rect.collidepoint(event.pos) and not leaderBoardActive and not changingRoomsCond and roomID == 0:
+                forceNewRoom(studyRoomTrigger)
             if journalInputBox.collidepoint(event.pos) and puzzleTextActive and puzzleList[0].pID == 0:
                 typing = True if not typing else False
                 journalInputText = ""
@@ -1061,15 +1082,6 @@ while run:
                 pass
             else:
                 typing = False
-            if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
-                leaderBoardActive = False if leaderBoardActive else True
-                #print(leaderBoard1st)
-                #print(leaderBoard2nd)
-                #print(leaderBoard3rd)
-                #print(leaderBoard4th)
-                #print(leaderBoard5th)
-            elif startMenu.rect.collidepoint(event.pos) and not leaderBoardActive and not changingRoomsCond and roomID == 0:
-                forceNewRoom(studyRoomTrigger)
         if timerEnabled: 
             if event.type == timerEvent:
                 currentTimerLengthSecs -= 1 if currentTimerLengthSecs > -1 else 0
