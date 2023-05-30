@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "idp-group-8-api",
+  "private_key_id": "2eda9786012d09e845efa468d664d7b23ed7b8f7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDNvC3uFhjtMpr\nqnI9HVXdUmif3Ywysw/LNMx2P2APVwBYoyqK2t0w+Pdg1Z2chuzJBQ3nv/zruUNq\nWsklmBmyk/U5EKHpeZQdpvM7oetqDrUQ6EnJF1vn1iBOvS228zFH11laxr6QdD7Q\nhAnWQ/zGW8cxgMoyBG4yrlhep/ovY+m3BemujmNY/XLTPBTpPO/AOdd17l9F9tB0\nHgwnUwODXOlmIwYcpPUeD+TQTW0y0UoN1UDkNZieSvQhUHLYkELBhUZ6AUC7+4Y7\nwGmvEYVkEsPMD1UvzJ4gX9dF4LLfTR4sCs30MOKvrcBVvvN6F7YpCgR1jc0QbBql\nJEAqklKlAgMBAAECggEATxrrTrd/8d9oC1sFceh6S/ZB+U4wqrbO1pxtohkqVuz9\nce2kpqHr8hVhQTcu6CfwucC3ksrEtczcGbPyQK6y8x9rxpUL121x7NYjSG3j1JVj\nIBfRFpDFqFunueCFLta7iI4mYleZDzZb4ekvh0kDnGnCfTfgN4Z+FUF7A9hz1FGm\nTGl2zALuKorl3iKpVd1NV7BP4ByIJ1BBIpt7OdfsJj+wu4+c/C1sjKIf8h40w3mi\nUwjsVuUkOspoA68GrlaDbCl6/3IZUHAx3DSRPWsz5SI1Y6T3Vll2UR3cj+qnqL+T\nqPU5E1sR2YdQSPbklDWIlIaVpe+eYzAE4lQSfJBR/QKBgQDgrFPD0LA4TzOyB8yi\nVP80ytC8qQjUhdPrjoSMNVdgr/w0Wl9cd5ctmI8QsIMG+dQYYxM20Xv+IFT0Btlp\niXUtA4dCKGQbE63lhC+VCqxO6ixsGq2hulW2ss2UgIZrbws76dZAhujKTRNsLOtf\n8mkSBzheGLPZwaRTTuTozDF1cwKBgQDebxhV9ErTD/J8fOLtC7B/dn0cdE3tWKab\nG1M1iKE+w7l6lrdnyelwyI9KyS1NnZ0KXpBX58aYtZhGqimqQjTB8qeRJ5p1v4A+\nIOnM3PTejzPPsr8+iVzU/c6+N+OISkZfOMdiF1LSe3svUt907FQgfhkANXOabCYB\nZxuKm1xRhwKBgD09u/d8QwyWSjkU9yqokIgLYKqMSOPlNsbWqjqtr4ujbNO4bpX9\n4y+Cjjy2YIDeSHn9R5eBspKqrX13AHxMA6ypcY0PBXp7+sK9LVsq9ZztJ/6vpvSW\nnhaW1oLMJdfTBPTn4IbmPz4llE3AUMhug0VuwmajxSJuLiSnNK5gOnsRAoGAT/I4\nGfSyzAdoTSwJ188iwb1RnF+E/rClOQxqLMyNv+RTDueKxegBWkMLlYKXINVscySn\n1qB8dbiXIZbZYNNo6OiRJ4/HaVjJ/AqSXcpwzGlF4vnI2O5ACmGq5B1sTzj68BCV\nQQFHCFXPYaP0oq6qUf9gdv2/Lhp+0nQ/puLOHJMCgYEApgPay1oQ4NT073Y7OW1H\nFdv6F9Rf3UTl7lA+PgZ6c2SHwjvaynDJcXEe23Ghhkj/icXS/3Xddb5jyCpQpR/y\ngT5/oqjnTXZ3/p2zbXccWrW8NbkUo+G2I7IBp4gVo7pjuBCobuMW8ITQRFwqgR2j\np5OHslrMsSj/DpqCFDKGtAY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "idp-group-8-api@idp-group-8-api.iam.gserviceaccount.com",
+  "client_id": "117100804410413007509",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/idp-group-8-api%40idp-group-8-api.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
