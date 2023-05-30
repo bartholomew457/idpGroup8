@@ -628,8 +628,11 @@ def surveyToMainScreen():
     global surveyUsernameText
     playerSurveyResponses = inventoryList
     playerUsername = surveyUsernameText
+    hardestPuzzle = playerSurveyResponses[0]
+    easiestPuzzle = playerSurveyResponses[1]
+    gameRating = playerSurveyResponses[2]
     surveyUsernameText = ""
-    append_data_to_sheet(surveyUsernameText=surveyUsernameText, max_time=900, puzzle1Time=puzzle1Time, puzzle2Time=puzzle2Time, puzzle3Time=puzzle3Time, hints=hints, hintsUsedPuzzle1=hintsUsedPuzzle1, hintsUsedPuzzle2=hintsUsedPuzzle2, hintsUsedPuzzle3=hintsUsedPuzzle3)
+    append_data_to_sheet(playerUsername=playerUsername, max_time=900, puzzle1Time=puzzle1Time, puzzle2Time=puzzle2Time, puzzle3Time=puzzle3Time, hints=hints, hintsUsedPuzzle1=hintsUsedPuzzle1, hintsUsedPuzzle2=hintsUsedPuzzle2, hintsUsedPuzzle3=hintsUsedPuzzle3, hardestPuzzle=hardestPuzzle, easiestPuzzle=easiestPuzzle, gameRating=gameRating)
     forceNewRoom(backToStartMenu)
 
 dialogueEventDict = {
