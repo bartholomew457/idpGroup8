@@ -23,7 +23,7 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
     #sheet = gc.open('IDP Group 8: API Coding')
 
     # Select the first worksheet
-    worksheet = sheet.sheet1
+    wks = sheet[0]
     
     # The max_time is controled (aka consistent)
     max_time = 900
@@ -45,7 +45,7 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
             gameRating]
 
     # Append the data to the worksheet
-    worksheet.append_table(start='A1', end=None, values=[data], dimension='ROWS')
+    wks.append_table(start='A1', end=None, values=[data], dimension='ROWS')
     print('Data appended successfully.') #worksheet.get_value([cellname])
 
 def retrieve_data_from_sheet(cellname):

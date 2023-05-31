@@ -1068,7 +1068,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
                 leaderBoardActive = False if leaderBoardActive else True
-            if exitButton.rect.collidepoint(event.pos):
+            elif exitButton.rect.collidepoint(event.pos):
                 pygame.time.wait
                 puzzleTextActive = False
                 leaderBoardActive = False
