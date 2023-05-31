@@ -30,16 +30,16 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
     # Prepare the data to be appended
     total_time = puzzle1Time + puzzle2Time + puzzle3Time
     data = [playerUsername, 
-            (max_time - total_time) * 1000, 
+            str((max_time - total_time) * 1000), 
             format_seconds(max_time), 
             format_seconds(puzzle1Time), 
             format_seconds(puzzle2Time), 
             format_seconds(puzzle3Time), 
             format_seconds(total_time), 
-            hints, 
-            hintsUsedPuzzle1, 
-            hintsUsedPuzzle2, 
-            hintsUsedPuzzle3,
+            str(hints), 
+            str(hintsUsedPuzzle1), 
+            str(hintsUsedPuzzle2), 
+            str(hintsUsedPuzzle3),
             hardestPuzzle, 
             easiestPuzzle, 
             gameRating]
