@@ -17,13 +17,13 @@ def format_seconds(seconds: int) -> str:
 def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, puzzle2Time: int, puzzle3Time: int, hints: int, hintsUsedPuzzle1: int, hintsUsedPuzzle2: int, hintsUsedPuzzle3: int, hardestPuzzle: str, easiestPuzzle: str, gameRating: str) -> None:
     """Appends relevant data of the game to the given Google Sheet"""
     # Load the credentials from the JSON file
-    #gc = pygsheets.authorize(service_file='service_key_file.json')
+    #gc = pygsheets.authorize(service_file='service_key_file.json')  #Outside of loop so not nessary.
 
     # Open the Google Sheet by its title
-    #sheet = gc.open('IDP Group 8: API Coding')
+    #sheet = gc.open('IDP Group 8: API Coding')  #Outside of loop so not nessary.
 
     # Select the first worksheet
-    wks = sheet[0]
+    wks1 = sheet[0]
     
     # The max_time is controled (aka consistent)
     max_time = 900
@@ -45,10 +45,10 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
             gameRating]
 
     # Append the data to the worksheet
-    wks.append_table(start='A1', end=None, values=[data], dimension='ROWS')
+    wks1.append_table(start='A1', end=None, values=[data], dimension='ROWS')
     print('Data appended successfully.') #worksheet.get_value([cellname])
 
 def retrieve_data_from_sheet(cellname):
     """Returns a value from sheet 2 when given a cellname"""
-    worksheet = sheet[1]
-    return worksheet.get_value(cellname)
+    wks2 = sheet[1]
+    return wks2.get_value(cellname)
