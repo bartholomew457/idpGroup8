@@ -435,6 +435,19 @@ studyExitDoorDialogue.image.set_alpha(0)
 surveyRoomTrigger = NewRoomTrigger(1575, height/2, 50, 600, False, False, 2763, 1900, 1200, 2, 3000)
 surveyRoomTrigger.image.set_alpha(0)
 
+# Rooms hallway, ground, and basement
+hallwayFloor = Environment(width/2, height/2, 1200, 750, False, False, "hallwayFloor.png")
+hallwayRoomTrigger = NewRoomTrigger(1700, 1000, 100, 100, False, False, 2, width/2, height/2, 10, 0,)
+hallwayRoomTrigger.image.set_alpha(0)
+
+groundFloor = Environment(width/2, height/2, 1600, 900, False, False, "groundFloor.png")
+groundRoomTrigger = NewRoomTrigger(1700, 1000, 100, 100, False, False, 3, width/2, height/2, 10, 0,)
+groundRoomTrigger.image.set_alpha(0)
+
+basementFloor = Environment(width/2, height/2, 1600, 900, False, False, "basementFloor.png")
+basementRoomTrigger = NewRoomTrigger(1700, 1000, 100, 100, False, False, 4, width/2, height/2, 10, 0,)
+basementRoomTrigger.image.set_alpha(0)
+
 # survey
 surveySpace = Environment(width/2, height/2, width, height, False, False, "miscAssets/solidWhite.png")
 surveyJournal = Environment(400, 450, 146, 200, False, True, "studyRoom/journalAsset.png")
@@ -467,9 +480,21 @@ def survey():
     environment_group.add(surveySpace)
     inventoryList = []
 
+def hallway():
+    environment_group.add(hallwayFloor)
+
+def ground():
+    environment_group.add(groundFloor)
+
+def basement():
+    environment_group.add(basementFloor)
+
 roomDict = {
     0 : startScreen,
     1 : study, 
+    2 : hallway,
+    3 : ground,
+    4 : basement,
     2763 : survey
 }
 
@@ -519,9 +544,21 @@ def surveyExtra():
         screen.blit(surveyUsernameSurf, (surveyUsernameInputBox.x + 5, surveyUsernameInputBox.y + 8))
         screen.blit(surveyTypeHereLabel, (surveyUsernameInputBox.x, surveyUsernameInputBox.y - surveyTypeHereLabel.get_height() - 60))
 
+def hallwayExtra():
+    player.update()
+
+def groundExtra():
+    player.update()
+
+def basementExtra():
+    player.update()
+
 roomExtraDict = {
     0 : startScreenExtra,
     1 : studyExtra,
+    2 : hallwayExtra,
+    3 : groundExtra,
+    4 : basementExtra,
     2763 : surveyExtra
 }
 
@@ -1076,6 +1113,14 @@ while run:
                     movement = False
             elif event.key == pygame.K_f and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
+            if event.key == pygame.K_v:
+                forceNewRoom(hallwayRoomTrigger)
+            elif event.key == pygame.K_b:
+                forceNewRoom(groundRoomTrigger)
+            elif event.key == pygame.K_n:
+                forceNewRoom(basementRoomTrigger)
+            elif event.key == pygame.K_m:
+                forceNewRoom(backToStartMenu)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and textDone and activeMessage < len(wholeMessage) - 1:
                 textDone = False
