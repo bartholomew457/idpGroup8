@@ -1,4 +1,5 @@
 import pygsheets
+import datetime
 
 # Load the credentials from the JSON file
 gc = pygsheets.authorize(service_file='service_key_file.json')
@@ -27,6 +28,9 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
     
     # The max_time is controled (aka consistent)
     max_time = 900
+    current_datetime = datetime.datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M")
+    
     # Prepare the data to be appended
     total_time = puzzle1Time + puzzle2Time + puzzle3Time
     data = [playerUsername, 
@@ -42,7 +46,8 @@ def append_data_to_sheet(playerUsername: str, max_time: int, puzzle1Time: int, p
             str(hintsUsedPuzzle3),
             hardestPuzzle, 
             easiestPuzzle, 
-            gameRating]
+            gameRating,
+            formatted_datetime]
 
     # Append the data to the worksheet
     wks1.append_table(start='A1', end=None, values=[data], dimension='ROWS')

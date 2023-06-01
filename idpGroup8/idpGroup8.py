@@ -14,11 +14,20 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("idp")
 clock = pygame.time.Clock()
 
-leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
-leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
-leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
-leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
-leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
+if retrieve_data_from_sheet('H2') == "": leaderBoard1st = f"1st| {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}: Time Taken: N/A"
+else: leaderBoard1st = f"1st| {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}: Time Taken: {retrieve_data_from_sheet('H2')}"
+
+if retrieve_data_from_sheet('H3') == "": leaderBoard2nd = f"2nd| {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}: Time Taken: N/A"
+else: leaderBoard2nd = f"2nd| {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}: Time Taken: {retrieve_data_from_sheet('H3')}"
+
+if retrieve_data_from_sheet('H4') == "": leaderBoard3rd = f"3rd| {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}: Time Taken: N/A"
+else: leaderBoard3rd = f"3rd| {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}: Time Taken: {retrieve_data_from_sheet('H4')}"
+
+if retrieve_data_from_sheet('H5') == "": leaderBoard4th = f"4th| {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}: Time Taken: N/A"
+else: leaderBoard4th = f"4th| {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}: Time Taken: {retrieve_data_from_sheet('H5')}"
+
+if retrieve_data_from_sheet('H6') == "": leaderBoard5th = f"5th| {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}: Time Taken: N/A"
+else: leaderBoard5th = f"5th| {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}: Time Taken: {retrieve_data_from_sheet('H6')}"
 
 # Music and Sounds
 click = pygame.mixer.Sound("dialogueSFX.mp3")
@@ -741,15 +750,24 @@ def death():
     dummy.image.set_alpha(dummyAlpha)
     print(f"puzzle 1: {puzzle1Time}, puzzle 2: {puzzle2Time}, puzzle 3: {puzzle3Time}")
     print(f"hints 1: {hintsUsedPuzzle1}, hints 2: {hintsUsedPuzzle2}, hints 3: {hintsUsedPuzzle3}")
-    puzzle1Time, puzzle2Time, puzzle3Time = "N/A", "N/A", "N/A"
+    puzzle1Time, puzzle2Time, puzzle3Time = 0, 0, 0
     hintsUsedPuzzle1, hintsUsedPuzzle2, hintsUsedPuzzle3 = "N/A", "N/A", "N/A"
 
-    leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
-    leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
-    leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
-    leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
-    leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
+    if retrieve_data_from_sheet('H2') == "": leaderBoard1st = f"1st| {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}: Time Taken: N/A"
+    else: leaderBoard1st = f"1st| {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}: Time Taken: {retrieve_data_from_sheet('H2')}"
 
+    if retrieve_data_from_sheet('H3') == "": leaderBoard2nd = f"2nd| {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}: Time Taken: N/A"
+    else: leaderBoard2nd = f"2nd| {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}: Time Taken: {retrieve_data_from_sheet('H3')}"
+
+    if retrieve_data_from_sheet('H4') == "": leaderBoard3rd = f"3rd| {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}: Time Taken: N/A"
+    else: leaderBoard3rd = f"3rd| {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}: Time Taken: {retrieve_data_from_sheet('H4')}"
+
+    if retrieve_data_from_sheet('H5') == "": leaderBoard4th = f"4th| {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}: Time Taken: N/A"
+    else: leaderBoard4th = f"4th| {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}: Time Taken: {retrieve_data_from_sheet('H5')}"
+
+    if retrieve_data_from_sheet('H6') == "": leaderBoard5th = f"5th| {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}: Time Taken: N/A"
+    else: leaderBoard5th = f"5th| {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}: Time Taken: {retrieve_data_from_sheet('H6')}"
+    
 def surveyIntroDialogue():
     pygame.time.wait(1000)
     forceCustomDialogue(3, ["...", "oh, hey there.", "i didn't expect you to get here so soon...", "*psst what am i supposed to do again?*", "OH RIGHT, uhhh...", "\"What do you think was the hardest puzzle?\"", " "], ["what.png","what.png","what.png","what.png","what.png","what.png","what.png",])
@@ -827,7 +845,7 @@ def journalZoom():
         pygame.draw.rect(screen, (0, 0, 0), journalInputBox, 2)
     else:
         pygame.draw.rect(screen, (128, 128, 128), journalInputBox, 2)
-        journalInputText = "_"
+        journalInputText = "Type here..."
     journalInputTextSurf = font.render(journalInputText, False, (255, 255, 255))
     screen.blit(journalInputTextSurf, (journalInputBox.x + 5, journalInputBox.y + 8))
     screen.blit(journalCodeSurf, journalCodeRect)
