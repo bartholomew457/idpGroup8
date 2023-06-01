@@ -344,7 +344,7 @@ leaderBoardButton = Environment(100, 100, 150, 150, False, False, "miscAssets/pl
 
 leaderBoardTitle = Environment(width/2, 225, 1100, 225, False, False, "miscAssets/placeholderLeaderboardTitle.png")
 
-leaderBoardBackground = Environment(width/2, height/2, 1200, 700, False, False, "miscAssets/solidBlack.png")
+leaderBoardBackground = Environment(width/2, height/2, 1400, 700, False, False, "miscAssets/solidBlack.png")
 leaderBoardBackground.image.set_alpha(128)
 
 # Room 1
@@ -1051,12 +1051,6 @@ hintsUsedPuzzle2 = 0
 hintsUsedPuzzle3 = 0
 hints = hintsUsedPuzzle1 + hintsUsedPuzzle2 + hintsUsedPuzzle3
 
-#leaderBoard1st = f"1st: {retrieve_data_from_sheet('A2')}: {retrieve_data_from_sheet('B2')}"
-#leaderBoard2nd = f"2nd: {retrieve_data_from_sheet('A3')}: {retrieve_data_from_sheet('B3')}"
-#leaderBoard3rd = f"3rd: {retrieve_data_from_sheet('A4')}: {retrieve_data_from_sheet('B4')}"
-#leaderBoard4th = f"4th: {retrieve_data_from_sheet('A5')}: {retrieve_data_from_sheet('B5')}"
-#leaderBoard5th = f"5th: {retrieve_data_from_sheet('A6')}: {retrieve_data_from_sheet('B6')}"
-
 screenTransitionAlpha = 0
 dummyAlpha = 255
 
@@ -1132,7 +1126,6 @@ while run:
             if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
                 leaderBoardActive = False if leaderBoardActive else True
             elif exitButton.rect.collidepoint(event.pos) and interactable:
-                pygame.time.wait
                 puzzleTextActive = False
                 leaderBoardActive = False
                 movement = True
