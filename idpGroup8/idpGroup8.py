@@ -1095,14 +1095,14 @@ while run:
                     movement = False
             elif event.key == pygame.K_f and roomID == 0:
                 forceNewRoom(studyRoomTrigger)
-            if event.key == pygame.K_v:
-                forceNewRoom(hallwayRoomTrigger)
-            elif event.key == pygame.K_b:
-                forceNewRoom(groundRoomTrigger)
-            elif event.key == pygame.K_n:
-                forceNewRoom(basementRoomTrigger)
-            elif event.key == pygame.K_m:
-                forceNewRoom(backToStartMenu)
+            #if event.key == pygame.K_v:
+            #    forceNewRoom(hallwayRoomTrigger)
+            #elif event.key == pygame.K_b:
+            #    forceNewRoom(groundRoomTrigger)
+            #elif event.key == pygame.K_n:
+            #    forceNewRoom(basementRoomTrigger)
+            #elif event.key == pygame.K_m:
+            #    forceNewRoom(backToStartMenu)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and textDone and activeMessage < len(wholeMessage) - 1:
                 textDone = False
@@ -1113,7 +1113,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if leaderBoardButton.rect.collidepoint(event.pos) and not changingRoomsCond and roomID == 0:
                 leaderBoardActive = False if leaderBoardActive else True
-            elif exitButton.rect.collidepoint(event.pos):
+            elif exitButton.rect.collidepoint(event.pos) and interactable:
                 pygame.time.wait
                 puzzleTextActive = False
                 leaderBoardActive = False
